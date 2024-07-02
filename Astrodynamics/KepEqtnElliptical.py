@@ -14,7 +14,7 @@ def kepEqtnE(M,e):
     max_iterations = 100     # Maximizes the number of iterations to 20
 
     for i in range(max_iterations):
-        Enplus1 = En + (M - En + (e*math.sin(En)/(1-e*math.cos(En))))
+        Enplus1 = En + ((M - En + (e*math.sin(En)))/(1-e*math.cos(En)))
         if abs(Enplus1 - En) < tolerance:
             E = Enplus1
             return E
@@ -25,8 +25,8 @@ def kepEqtnE(M,e):
     return Enplus1
 
 
-M = 1.047
-e = 0.5
+M =  4.10850506
+e = 0.4
 E = kepEqtnE(M,e)
 print(f"Eccentric Anomaly E = {E}")
 
