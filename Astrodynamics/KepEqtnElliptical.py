@@ -6,23 +6,21 @@ import math
 
 def kepEqtnE(M,e):
     if -math.pi < M < 0 or M > math.pi:
-        En = M-e
+        En = M - e
     else:
-        En = M+e
+        En = M + e
 
-    tolerance = 1*10**-8    # The standard tolerance for Newton_Raphson Method
+    tolerance = 1 * 10**-8    # The standard tolerance for Newton_Raphson Method
     max_iterations = 100     # Maximizes the number of iterations to 20
 
     for i in range(max_iterations):
-        Enplus1 = En + ((M - En + (e*math.sin(En)))/(1-e*math.cos(En)))
+        Enplus1 = En + ((M - En + (e * math.sin(En)))/(1 - e * math.cos(En)))
         if abs(Enplus1 - En) < tolerance:
             E = Enplus1
             return E
-
         En = Enplus1
-
     print(f"Warning: Tolerance not met after {max_iterations} iterations")
-    return Enplus1
+
 
 
 M =  4.10850506
