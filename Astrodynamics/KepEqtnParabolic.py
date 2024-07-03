@@ -7,23 +7,24 @@
 # B = Parabolic Anomaly
 
 import math
-from FUNCTIONS.ARCCOTANGENT import arccot
+from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth
+from FUNCTIONS.FUNCTIONS import arccot
 
-
-def kepeqtnP(delta_t, p, mass):
-    G = 6.673*10E-20 # km^3/kg*s^2
-    mu = G * mass
+def kepeqtnP(delta_t, p, mu):
     np = 2 * math.sqrt(mu / p**3) # mean motion of the parabolic orbit
-    s = 2 * arccot(3/2 * np * delta_t)
-    w = math.atan(math.tan(s)**(1/3))
+    s = (1/2 * arccot(3/2 * np * delta_t))
+    w = (math.atan(math.tan(s)**(1/3)))
     B = 2 * (1 / math.tan(2 * w))
-    print(mu)
-    print(np)
-    return math.radians(B)
+
+    return (B)
+
+
+
+
 
 delta_t = 53.7874 * 60
 p = 25512 # km
-mass = 5.9742 * 10E24
-B = kepeqtnP(delta_t, p, mass)
+mu = Earth.Earth_mu
+B = kepeqtnP(delta_t, p, mu)
 print(f"Parabolic Anomaly B = {B}")
 
