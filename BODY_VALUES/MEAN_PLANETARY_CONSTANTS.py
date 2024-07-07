@@ -1,5 +1,4 @@
 # VALUES DISPLAYED ARE IN REFERENCE OF EPOCH J2000
-
 class Earth:
     Earth_SMA = 149598023 #km
     Earth_ecc = 0.016708617
