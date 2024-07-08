@@ -10,5 +10,3 @@ def sign(num):
 
 #Should Input a [N x 3] vector
 #Error message will output if formatting is not correct
-def norm(vec)
-    vec

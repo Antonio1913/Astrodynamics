@@ -19,3 +19,4 @@ def nutoAnomaly (e, nu):
     else:
         H1 = math.asinh((math.sin(nu) * math.sqrt(e**2 - 1)) / (1 + (e * math.cos(nu))))
         H2 = math.acosh((e + math.cos(nu)) / (1 + (e * math.cos(nu))))
+        return H1,H2
