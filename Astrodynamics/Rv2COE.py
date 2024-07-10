@@ -1,4 +1,7 @@
-
+# this function will calculate the orbital elements of a orbiting body given a known position vector and its velocity
+# at that position.
+# Inputs must be a [1X3] and in km
+# Outputs are in Km and degrees
 
 import numpy as np
 
@@ -21,6 +24,7 @@ def RV2COE (r_ijk, v_ijk, mu):
     # Specific Orbital Energy
     energy = vel_mag**2 / 2 - (mu / pos_mag) # km^2/s^2
 
+    # Semi-Major Axis and Semi-Minor Axis
     if ecc != 1:
         a = -(mu / (2 * energy)) # km
         p = a * (1 - ecc**2) # km
@@ -29,27 +33,35 @@ def RV2COE (r_ijk, v_ijk, mu):
         p = h_mag**2 / mu # km
         a = float('inf') # km
 
+    #Inclination
     incl = np.degrees(np.acos(h_vec[2] / h_mag)) # degrees
 
+    #Ascending Node
     ascending_node = np.degrees(np.acos(n_vec[0] / n_mag)) # degrees
 
+    # Argument of Perigee
     arg_perigee = np.degrees(np.acos(np.dot(n_vec, ecc_vec) / (n_mag * ecc))) # degrees
 
+    # True Anomaly
     true_anomaly = np.degrees(np.acos(np.dot(ecc_vec, r_ijk) / (ecc * pos_mag))) # degrees
 
+    #Special Cases
+    # Elliptical and Equatorial - True Argument of Perigee
     arg_perigee_true = np.degrees(np.acos(ecc_vec[0] / ecc)) # degrees
     if ecc_vec[1] < 0:
         arg_perigee_true = 360 - arg_perigee_true # degrees
 
+    # Circular Inclined - Argument of Latitude
     arg_latitude = np.degrees(np.acos(np.dot(n_vec, r_ijk) / (n_mag * pos_mag))) # degrees
     if r_ijk[2] < 0:
         arg_latitude = 360 - arg_latitude # degrees
 
+    # Circular Equatorial - True Lambda
     lambda_true  = np.degrees(np.acos(r_ijk[0] / pos_mag)) # degrees
     if r_ijk[1] < 0:
         lambda_true = 360 - lambda_true # degrees
 
-    return a, p, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true
+    return a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true
 
 
 
