@@ -75,7 +75,7 @@ v_ijk = np.array([4.901327, 5.533756, -1.976341])   # Velocity vector in kilomet
 mu = 398600.4418  # Standard gravitational parameter for Earth in km^3/s^2
 
 # Call the function
-a, p, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r_ijk, v_ijk, mu)
+a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r_ijk, v_ijk, mu)
 
 # Print the results
 print("Semi-major axis (a):", a, "km")
