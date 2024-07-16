@@ -8,5 +8,4 @@ def arccot(x):
 def sign(num):
     return -1 if num < 0 else 1
 
-#Should Input a [N x 3] vector
-#Error message will output if formatting is not correct
+#Rotation Matrices 
