@@ -9,13 +9,13 @@
 # If Hyperbolic *args should be "H"
 import math as m
 
-def anomaly2nu(e, anomaly_type, *args):
+def anomaly2nu(ecc, anomaly_type, *args):
     if anomaly_type == "Eccentric":
-        if len(args) !=1:
-            raise ValueError("For Eccentric Anomaly, only one argument (E) is required.")
+        if len(args) != 1:
+            raise ValueError("For Eccentric Anomaly, only one argument (E) is required or input is misspelled.")
         E = args[0]
-        nu1 = m.asin((m.sin(E) * m.sqrt(1 - e**2)) / (1 - (e * m.cos(E))))
-        nu2 = m.acos((m.cos(E) - e) / (1 - (e * m.cos(E))))
+        nu1 = m.asin((m.sin(E) * m.sqrt(1 - ecc**2)) / (1 - (ecc * m.cos(E))))
+        nu2 = m.acos((m.cos(E) - ecc) / (1 - (ecc * m.cos(E))))
     
     elif anomaly_type == "Parabolic":  
         if len(args) != 3:
@@ -28,8 +28,8 @@ def anomaly2nu(e, anomaly_type, *args):
         if len(args) != 1:
             raise ValueError("For Hyperbolic Anomaly, only one argument (H) is required.")
         H = args[0]
-        nu1 = m.asin((-m.sinh(H) * m.sqrt(e ** 2 - 1)) / (1 - (e * m.cosh(H))))
-        nu2 = m.acos((m.cosh(H) - e) / (1 - (e * m.cosh(H))))
+        nu1 = m.asin((-m.sinh(H) * m.sqrt(ecc ** 2 - 1)) / (1 - (ecc * m.cosh(H))))
+        nu2 = m.acos((m.cosh(H) - ecc) / (1 - (ecc * m.cosh(H))))
 
     else:
         raise ValueError("Invalid anomaly_type provided.")
