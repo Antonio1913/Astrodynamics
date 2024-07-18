@@ -78,15 +78,15 @@ mu = 398600.4418  # Standard gravitational parameter for Earth in km^3/s^2
 a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r_ijk, v_ijk, mu)
 
 # Print the results
-print("Semi-major axis (a):", a, "km")
-print("Semi-latus rectum (p):", p, "km")
-print("Inclination (incl):", incl, "degrees")
-print("Right Ascension of Ascending Node (RAAN):", ascending_node, "degrees")
-print("Argument of Perigee (arg_perigee):", arg_perigee, "degrees")
-print("True Anomaly (true_anomaly):", true_anomaly, "degrees")
-print("arg_perigee_true (arg_perigee_true):", arg_perigee_true, "degrees")
-print("Argument of Latitude (arg_latitude):", arg_latitude, "degrees")
-print("True Longitude (lambda_true):", lambda_true, "degrees")
+# print("Semi-major axis (a):", a, "km")
+# print("Semi-latus rectum (p):", p, "km")
+# print("Inclination (incl):", incl, "degrees")
+# print("Right Ascension of Ascending Node (RAAN):", ascending_node, "degrees")
+# print("Argument of Perigee (arg_perigee):", arg_perigee, "degrees")
+# print("True Anomaly (true_anomaly):", true_anomaly, "degrees")
+# print("arg_perigee_true (arg_perigee_true):", arg_perigee_true, "degrees")
+# print("Argument of Latitude (arg_latitude):", arg_latitude, "degrees")
+# print("True Longitude (lambda_true):", lambda_true, "degrees")
 
 
 

@@ -89,7 +89,15 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
         raise ValueError("f and g function check did not equal 1, Check input value, units, and format")
 
 
+r_ijk = np.array([1131.340, -2282.343, 6672.43])  # Position vector in kilometers
+v_ijk = np.array([-5.64305, 4.30333, 2.42879])   # Velocity vector in kilometers per second
+mu = 398600.4418  # Standard gravitational parameter for Earth in km^3/s^2
+delta_t = 40 * 60 # sec
 
+r_vec, v_vec = KEPLER(r_ijk, v_ijk, delta_t, mu)
+
+print(r_vec)
+print(v_vec)
 
 
 

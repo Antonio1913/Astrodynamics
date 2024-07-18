@@ -26,5 +26,5 @@ delta_t = 53.7874 * 60
 p = 25512 # km
 mu = Earth.Earth_mu
 B = kepeqtnP(delta_t, p, mu)
-print(f"Parabolic Anomaly B = {B}")
+# print(f"Parabolic Anomaly B = {B}")
 

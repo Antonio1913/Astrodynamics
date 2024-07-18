@@ -63,6 +63,6 @@ mu = E.Earth_mu
 case = "lambda_true"
 
 r_vec_IJK, v_vec_IJK = COE2RV(p, e, i, Omega, omega, nu, mu, case, 60)
-print("position vector in the ijk reference frame", r_vec_IJK, "km")
-print("velocity vector in the ijk reference frame", v_vec_IJK, "km/s")
+# print("position vector in the ijk reference frame", r_vec_IJK, "km")
+# print("velocity vector in the ijk reference frame", v_vec_IJK, "km/s")
 

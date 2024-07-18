@@ -29,7 +29,7 @@ def kepeqtnH(M, e):
 M = 235.4 * math.pi / 180
 e = 2.4
 H = kepeqtnH(M,e)
-print(f"Hyperbolic Anomaly H = {H}")
+# print(f"Hyperbolic Anomaly H = {H}")
 
 
 
