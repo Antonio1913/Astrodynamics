@@ -2,9 +2,9 @@
 # any perturbations. Therefore, the only value to change in the two positions is the true anomaly or the special orbit
 # parameters.
 
-# This method uses the known position and velocity to find the initial position's anomaly. Then determining the Mean anomaly.
-# Finally using the mean anomaly to determine the true anomaly at the new position all information is present to
-# determine the new position and velocity.
+# This method uses the known position and velocity to find the initial position's anomaly. Then determining the
+# Mean anomaly. Finally using the mean anomaly to determine the true anomaly at the new position all information is
+# present to determine the new position and velocity.
 
 # INPUTS
 #   r0_vec      - initial position
@@ -17,17 +17,18 @@
 
 
 import numpy as np
- from Rv2COE import RV2COE
- from TrueAnomaly2Anomaly import nutoAnomaly
- from KepEqtnElliptical import kepEqtnE
- from KepEqtnParabolic import kepeqtnP
- from KepEqtnHyperbolic import kepeqtnH
+from Rv2COE import RV2COE
+from TrueAnomaly2Anomaly import nutoAnomaly
+from KepEqtnElliptical import kepEqtnE
+from KepEqtnParabolic import kepeqtnP
+from KepEqtnHyperbolic import kepeqtnH
+from Anomaly2nu import anomaly2nu
+from COE2RV import COE2RV
 # from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 
-def KeplerCOE (r0_vec, v0_vec, delta_t, mu):
+def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
 
-
- a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r0_vec, v0_vec, mu)
+    a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r0_vec, v0_vec, mu)
 
     if ecc != 0:
         anomaly0 = nutoAnomaly(ecc, true_anomaly)
@@ -43,17 +44,19 @@ def KeplerCOE (r0_vec, v0_vec, delta_t, mu):
         anomaly = kepEqtnE(M, ecc) #Eccentric Anomaly
         anomaly_type = "Eccentric"
         arg = (anomaly,)
-
+        arg2 = "none"
 #   Parabolic Case
     if ecc == 1:
         h_vec = np.linalg.cross(r0_vec, v0_vec)
         h_mag = np.linalg.norm(h_vec)
         p = h_mag**2 / mu
-        M0 = anomaly0 + (anomaly0**3 / 3)
+        #M0 = anomaly0 + (anomaly0**3 / 3)
         anomaly = kepeqtnP(delta_t, p, mu) # Parabolic anomaly
         r_mag = p / 2 * (1 + anomaly**2)
         anomaly_type = "Parabolic"
         arg = (anomaly, p, r_mag)
+        arg2 = "none"
+
 #   Hyperbolic Case
     if ecc > 1:
         M0 = ecc * np.sinh(anomaly0) - anomaly0
@@ -63,13 +66,17 @@ def KeplerCOE (r0_vec, v0_vec, delta_t, mu):
         anomaly = kepeqtnH(M , ecc) # Hyperbolic Anomaly
         anomaly_type = "Hyperbolic"
         arg = (anomaly,)
-
+        arg2 = "none"
     if ecc != 0:
-        true_anomaly_new = anomaly2nu(ecc, anomaly_type, *arg)
+        # arg is E or H for Eccentric or Hyperbolic case but B,p, r for parabolic
+        true_anomaly_new = anomaly2nu(ecc, anomaly_type, arg)
     else:
-    arg_latitude = anomaly
+        arg_latitude = anomaly
+        arg2 = arg_latitude
 
-      r_vec_IJK, v_vec_IJK = COE2RV(p, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args)
+    r_vec_IJK, v_vec_IJK = COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, arg2)
+
+    return r_vec_IJK, v_vec_IJK
 
 
 
