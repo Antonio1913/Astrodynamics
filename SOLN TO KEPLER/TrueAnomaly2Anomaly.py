@@ -3,24 +3,24 @@
 
 # INPUTS
 # e             - Eccentricity
-# nu            - True Anomaly
+# nu            - True Anomaly, rad
 
 # OUTPUTS
 # E             - Eccentric Anomaly
 # P             - Parabolic Anomaly
 # H             - Hyperbolic Anomaly
 
-import math
+import numpy as np
 
 def nutoAnomaly (e, nu):
     if e < 1.0:
-        #E1 = math.asin((math.sin(nu) * math.sqrt(1 - e**2)) / (1 + (e * math.cos(nu))))
-        E = math.acos((e + math.cos(nu)) / (1 + (e * math.cos(nu))))
+        #E1 = np.asin((math.sin(nu) * np.sqrt(1 - e**2)) / (1 + (e * np.cos(nu))))
+        E = np.acos((e + np.cos(nu)) / (1 + (e * np.cos(nu))))
         return E
     elif e == 1:
-        B = math.tan(nu / 2)
+        B = np.tan(nu / 2)
         return  B
     else:
         #H1 = math.asinh((math.sin(nu) * math.sqrt(e**2 - 1)) / (1 + (e * math.cos(nu))))
-        H = math.acosh((e + math.cos(nu)) / (1 + (e * math.cos(nu))))
+        H = np.acosh((e + np.cos(nu)) / (1 + (e * np.cos(nu))))
         return H

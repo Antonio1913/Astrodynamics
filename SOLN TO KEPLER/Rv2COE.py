@@ -2,6 +2,7 @@
 # at that position.
 # Inputs must be a [1X3] and in km
 # Outputs are in Km and degrees
+import math
 
 # INPUTS
 #   r0_vec      - [1x3] initial position
@@ -52,32 +53,38 @@ def RV2COE (r_ijk, v_ijk, mu):
         a = float('inf') # km
 
     #Inclination
-    incl = np.degrees(np.acos(h_vec[2] / h_mag)) # degrees
+    incl = (np.acos(h_vec[2] / h_mag))
 
     #Ascending Node
-    ascending_node = np.degrees(np.acos(n_vec[0] / n_mag)) # degrees
+    ascending_node = (np.acos(n_vec[0] / n_mag))
+    if n_vec[1] < 0:
+        ascending_node = (2 * math.pi) - ascending_node
 
     # Argument of Perigee
-    arg_perigee = np.degrees(np.acos(np.dot(n_vec, ecc_vec) / (n_mag * ecc))) # degrees
+    arg_perigee = (np.acos(np.dot(n_vec, ecc_vec) / (n_mag * ecc)))
+    if ecc_vec[2] < 0:
+        arg_perigee = (2 * math.pi) - arg_perigee
 
     # True Anomaly
-    true_anomaly = np.degrees(np.acos(np.dot(ecc_vec, r_ijk) / (ecc * pos_mag))) # degrees
+    true_anomaly = (np.acos(np.dot(ecc_vec, r_ijk) / (ecc * pos_mag)))
+    if np.dot(r_ijk, v_ijk) < 0:
+        true_anomaly = (2 * math.pi) - true_anomaly
 
     #Special Cases
     # Elliptical and Equatorial - True Argument of Perigee
-    arg_perigee_true = np.degrees(np.acos(ecc_vec[0] / ecc)) # degrees
+    arg_perigee_true = (np.acos(ecc_vec[0] / ecc))
     if ecc_vec[1] < 0:
-        arg_perigee_true = 360 - arg_perigee_true # degrees
+        arg_perigee_true = (2 * math.pi) - arg_perigee_true
 
     # Circular Inclined - Argument of Latitude
-    arg_latitude = np.degrees(np.acos(np.dot(n_vec, r_ijk) / (n_mag * pos_mag))) # degrees
+    arg_latitude = (np.acos(np.dot(n_vec, r_ijk) / (n_mag * pos_mag)))
     if r_ijk[2] < 0:
-        arg_latitude = 360 - arg_latitude # degrees
+        arg_latitude = (2 * math.pi) - arg_latitude
 
     # Circular Equatorial - True Lambda
-    lambda_true  = np.degrees(np.acos(r_ijk[0] / pos_mag)) # degrees
+    lambda_true  = (np.acos(r_ijk[0] / pos_mag))
     if r_ijk[1] < 0:
-        lambda_true = 360 - lambda_true # degrees
+        lambda_true = (2 * math.pi) - lambda_true
 
     return a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true
 
@@ -94,8 +101,8 @@ def RV2COE (r_ijk, v_ijk, mu):
 #
 # # Call the function
 # a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r_ijk, v_ijk, mu)
-
-# Print the results
+#
+# # Print the results
 # print("Semi-major axis (a):", a, "km")
 # print("Semi-latus rectum (p):", p, "km")
 # print("Inclination (incl):", incl, "degrees")
@@ -105,7 +112,7 @@ def RV2COE (r_ijk, v_ijk, mu):
 # print("arg_perigee_true (arg_perigee_true):", arg_perigee_true, "degrees")
 # print("Argument of Latitude (arg_latitude):", arg_latitude, "degrees")
 # print("True Longitude (lambda_true):", lambda_true, "degrees")
-
+#
 
 
 

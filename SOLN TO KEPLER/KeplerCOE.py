@@ -37,10 +37,11 @@ from COE2RV import COE2RV
 
 def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
 
+# All angles are in radians
     a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(r0_vec, v0_vec, mu)
 
     if ecc != 0:
-        anomaly0 = nutoAnomaly(ecc, true_anomaly)
+        anomaly0 = nutoAnomaly(ecc, true_anomaly) #radians
     else:
         anomaly0 = arg_latitude
 
