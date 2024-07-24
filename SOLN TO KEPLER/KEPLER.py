@@ -26,6 +26,11 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
     r0_mag = np.linalg.norm(r0_vec)
     v0_mag = np.linalg.norm(v0_vec)
 
+#   Saved value to decrease the number of calculations
+    sqrtmu = np.sqrt(mu)
+    val1 = np.dot(r0_vec, v0_vec) / sqrtmu
+    val2 = sqrtmu * delta_t
+
 #   orbits specific mechanical energy
     energy = (v0_mag**2 / 2) - (mu / r0_mag)
     a = -(mu / (2 * energy))
@@ -35,7 +40,7 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 #   circular or elliptical
     if alpha > 0.000001:
-        chi_n = np.sqrt(mu) * delta_t * alpha
+        chi_n = sqrtmu * delta_t * alpha
 
 #   parabolic
     elif abs(alpha) < 0.000001:
@@ -56,15 +61,10 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
     tolerance = 1 * 10**-6
     max_iterations = 100
 
-#   Saved value to decrease the number of calculations
-    sqrtmu = np.sqrt(mu)
-    val1 = np.dot(r0_vec, v0_vec) / sqrtmu
-    val2 = sqrtmu * delta_t
-
 #   Newton-Raphson iteration
     for i in range(max_iterations):
         psi = chi_n**2 * alpha
-        C2, C3 = findc2c3(chi_n)
+        C2, C3 = findc2c3(psi)
         r = (chi_n**2 * C2) + (val1 * chi_n * (1 - (psi * C3))) + (r0_mag * (1 - (psi * C2)))
         chi_n_plus1 = chi_n + ((val2 - (chi_n**3 * C3) - (val1 * chi_n**2 * C2) - (r0_mag * chi_n * (1 - (psi * C3)))) / r)
 
@@ -85,7 +85,8 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 #   New Velocity Vector
     v_vec = (f_dot * r0_vec) + (g_dot * v0_vec)
 
-    if (f * g_dot) - (f_dot * g) == 1:
+    check = (f * g_dot) - (f_dot * g)
+    if check > 1 - tolerance and check < 1 + tolerance:
         return r_vec, v_vec
     else:
         raise ValueError("f and g function check did not equal 1, Check input value, units, and format")

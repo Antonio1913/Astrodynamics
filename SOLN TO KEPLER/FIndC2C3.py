@@ -3,7 +3,7 @@
 # The following statements are ordered elliptical, parabolic, hyperbolic.
 
 # INPUTS
-#   chi             - Universal Variable
+#   psi- Universal Variable
 
 
 # OUTPUTS
@@ -12,13 +12,15 @@
 
 import math
 
-def findc2c3(chi):
-    if chi > 1e-6:
-        C2 = (1 - math.cos(math.sqrt(chi))) / chi
-        C3 = (math.sqrt(chi) - math.sin(math.sqrt(chi))) / math.sqrt(chi**3)
-    elif chi < -1e-6:
-        C2 = (1 - math.cosh(math.sqrt(-chi))) / chi
-        C3 =(math.sinh(math.sqrt(-chi)) - math.isqrt(-chi)) / (math.sqrt(-chi**3))
+def findc2c3(psi):
+    if psi> 1e-6:
+        C2 = (1 - math.cos(math.sqrt(psi))) / psi
+
+        C3 = (math.sqrt(psi) - math.sin(math.sqrt(psi))) / math.sqrt(psi**3)
+    elif psi< -1e-6:
+        C2 = (1 - math.cosh(math.sqrt(-psi))) / psi
+
+        C3 =(math.sinh(math.sqrt(-psi)) - math.isqrt(-psi)) / (math.sqrt(-psi**3))
     else:
         C2 = 1/2
         C3 = 1/6
@@ -27,6 +29,6 @@ def findc2c3(chi):
 
 
 # ---------------------------------------------------------------------------
-Chi_value = 0.0001
-C2, C3 = findc2c3(Chi_value)
+psi_value = 0.0001
+C2, C3 = findc2c3(psi_value)
 # print(f"C2 = {C2}, C3 = {C3}")
