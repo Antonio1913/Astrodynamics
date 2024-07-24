@@ -24,11 +24,11 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 #   Calculating the magnitude of the position and velocity
     r0_mag = np.linalg.norm(r0_vec)
-    v0_mag = np.linalg.norm(r0_vec)
+    v0_mag = np.linalg.norm(v0_vec)
 
 #   orbits specific mechanical energy
     energy = (v0_mag**2 / 2) - (mu / r0_mag)
-    a = -(mu / 2 * energy)
+    a = -(mu / (2 * energy))
     alpha = 1 / a
 
 #   Checking for orbital types
@@ -57,15 +57,16 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
     max_iterations = 100
 
 #   Saved value to decrease the number of calculations
-    val1 = np.dot(r0_vec, v0_vec) / np.sqrt(mu)
-    val2 = np.sqrt(mu) * delta_t
+    sqrtmu = np.sqrt(mu)
+    val1 = np.dot(r0_vec, v0_vec) / sqrtmu
+    val2 = sqrtmu * delta_t
 
 #   Newton-Raphson iteration
     for i in range(max_iterations):
         psi = chi_n**2 * alpha
         C2, C3 = findc2c3(chi_n)
-        r = chi_n**2 * C2 + (val1 * chi_n * (1 - psi * C3)) + (r0_mag * (1 - (psi * C2)))
-        chi_n_plus1 = chi_n + (val2 - (chi_n**3 * C3) - (val1 * chi_n**2 * C2) - (r0_mag * chi_n * (1 - (psi * C3))))
+        r = (chi_n**2 * C2) + (val1 * chi_n * (1 - (psi * C3))) + (r0_mag * (1 - (psi * C2)))
+        chi_n_plus1 = chi_n + ((val2 - (chi_n**3 * C3) - (val1 * chi_n**2 * C2) - (r0_mag * chi_n * (1 - (psi * C3)))) / r)
 
         if abs(chi_n - chi_n_plus1) < tolerance:
             chi_n = chi_n_plus1
@@ -74,9 +75,9 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 #   f and g function calculations
     f = 1 - ((chi_n**2 / r0_mag) * C2)
-    g = delta_t - ((chi_n**3 / np.sqrt(mu) * C3))
+    g = delta_t - ((chi_n**3 / sqrtmu) * C3)
     g_dot = 1 - ((chi_n**2 / r) * C2)
-    f_dot = (np.sqrt(mu) / (r * r0_mag)) * chi_n * ((psi * C3) - 1)
+    f_dot = (sqrtmu / (r * r0_mag)) * chi_n * ((psi * C3) - 1)
 
 #   New Position Vector
     r_vec = (f * r0_vec) + (g * v0_vec)
@@ -94,9 +95,9 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 
 #test case
-r_ijk = np.array([1131.340, -2282.343, 6672.43])  # Position vector in kilometers
+r_ijk = np.array([1131.340, -2282.343, 6672.423])  # Position vector in kilometers
 v_ijk = np.array([-5.64305, 4.30333, 2.42879])   # Velocity vector in kilometers per second
-mu = 398600.4418  # Standard gravitational parameter for Earth in km^3/s^2
+mu = 398600.4415  # Standard gravitational parameter for Earth in km^3/s^2
 delta_t = 40 * 60 # sec
 
 r_vec, v_vec = KEPLER(r_ijk, v_ijk, delta_t, mu)
