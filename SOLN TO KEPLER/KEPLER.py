@@ -9,6 +9,7 @@
 #   r0_vec      - initial position
 #   v0_vec      - initial velocity
 #   delta_t     - time frame of observation
+#   mu          - Gravitational Constant, km^3/s^2
 
 # OUTPUTS
 #   r_vec       - position vector at the observation time
@@ -89,6 +90,10 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
         raise ValueError("f and g function check did not equal 1, Check input value, units, and format")
 
 
+
+
+
+#test case
 r_ijk = np.array([1131.340, -2282.343, 6672.43])  # Position vector in kilometers
 v_ijk = np.array([-5.64305, 4.30333, 2.42879])   # Velocity vector in kilometers per second
 mu = 398600.4418  # Standard gravitational parameter for Earth in km^3/s^2

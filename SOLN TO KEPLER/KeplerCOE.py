@@ -12,8 +12,17 @@
 #   delta_t     - time frame of observation
 
 # OUTPUTS
-#   r_vec       - position vector at the observation time
-#   v_vec       - velocity at new position
+#   p                   - Semi-Parameter, km
+#   ecc                 - Eccentricity
+#   incl                - Inclination, rad
+#   ascending_node      - Ascending Node, rad
+#   arg_perigee         - Argument of Perigee, rad
+#   true_anomaly        - True Anomaly, rad
+#   mu                  - Gravitational Constant, km^3/s^2
+#   *args
+#   lambda_true         - Lambda True (Circular Equatorial Orbit)
+#   arg_latitude        - Argument of Latitude (Circular Inclined Orbit)
+#   arg_perigee_true    - True Argument of Perigee (Equatorial Elliptical Orbit)
 
 
 import numpy as np

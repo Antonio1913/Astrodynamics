@@ -1,10 +1,14 @@
 # THIS FUNCTION WILL OUTPUT THE ECCENTRIC, PARABOLIC, AND HYPERBOLIC ANOMALY DEPENDING ON THE TYPE OF THE INPUT ORBIT.
 # THIS FUNCTION NEEDS THE ECCENTRICITY AND THE TRUE ANOMALY TO GIVE THE ANOMALY NEEDED TO DERIVE THE FLIGHT PATH ANGLE.
-# e - Eccentricity
-# nu - True Anomaly
-# E - Eccentric Anomaly
-# P - Parabolic Anomaly
-# H - Hyperbolic Anomaly
+
+# INPUTS
+# e             - Eccentricity
+# nu            - True Anomaly
+
+# OUTPUTS
+# E             - Eccentric Anomaly
+# P             - Parabolic Anomaly
+# H             - Hyperbolic Anomaly
 
 import math
 

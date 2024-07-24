@@ -1,6 +1,13 @@
 
 
 
+# INPUTS
+#   M           - Mean Anomaly, rad
+#   ecc         - Eccentricity
+
+# OUTPUTS
+#   H           - Hyperbolic Anomaly, rad
+
 import math
 from FUNCTIONS.FUNCTIONS import sign
 
@@ -21,8 +28,7 @@ def kepeqtnH(M, e):
     for i in range(max_iterations):
         Hnplus1 = Hn + ((M - e * math.sinh(Hn) + Hn) / (e * math.cosh(Hn) - 1))
         if abs(Hnplus1 - Hn) < tolerance:
-            H = Hnplus1 * (180 / math.pi)
-            return H
+            H = Hnplus1
         Hn = Hnplus1
     print(f"Warning: Tolerance not met after {max_iterations} iterations")
 

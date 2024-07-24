@@ -7,7 +7,7 @@
 #   mu           - gravitational constant body mass, km^3 / s^2
 
 # OUTPUTS
-#   B            - Parabolic Anomaly , deg
+#   B            - Parabolic Anomaly , rad
 
 
 
@@ -20,7 +20,7 @@ def kepeqtnP(delta_t, p, mu):
     np = 2 * math.sqrt(mu / p**3) # mean motion of the parabolic orbit
     s = (1/2 * arccot(3/2 * np * delta_t))
     w = (math.atan(math.tan(s)**(1/3)))
-    B = (2 * (1 / math.tan(2 * w))) * (180 / math.pi)
+    B = (2 * (1 / math.tan(2 * w)))
 
     return (B)
 

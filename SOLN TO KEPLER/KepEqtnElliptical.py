@@ -1,14 +1,13 @@
 # Assumptions must be close enough to the true solution so there is no violation of the linear assumption
 # of the Newton-Raphson method
 # This function will provide the Eccentric Anomaly given the Mean Anomaly and the eccentricity.
+
 # INPUTS
 #   M           - Mean Anomaly, rad
 #   ecc         - Eccentricity
 
 # OUTPUTS
-#   E           - Eccentric Anomaly, deg
-
-
+#   E           - Eccentric Anomaly, rad
 
 import math
 
@@ -24,7 +23,7 @@ def kepEqtnE(M,ecc):
     for i in range(max_iterations):
         Enplus1 = En + ((M - En + (ecc * math.sin(En)))/(1 - ecc * math.cos(En)))
         if abs(Enplus1 - En) < tolerance:
-            E = Enplus1 * (180 / math.pi)
+            E = Enplus1
             return E
         En = Enplus1
     print(f"Warning: Tolerance not met after {max_iterations} iterations")
