@@ -1,6 +1,15 @@
 # This function solves C2(Chi) and C3(Chi) functions. These values are used to plug into the Kepler equations in term of
 # the universal-variable.
 # The following statements are ordered elliptical, parabolic, hyperbolic.
+
+# INPUTS
+#   chi             - Universal Variable
+
+
+# OUTPUTS
+#   C2              - Universal Constant
+#   C3              - Universal Constant
+
 import math
 
 def findc2c3(chi):

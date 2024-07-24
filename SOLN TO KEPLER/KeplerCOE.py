@@ -7,8 +7,8 @@
 # present to determine the new position and velocity.
 
 # INPUTS
-#   r0_vec      - initial position
-#   v0_vec      - initial velocity
+#   r0_vec      - [1x3] initial position
+#   v0_vec      - [1x3] initial velocity
 #   delta_t     - time frame of observation
 
 # OUTPUTS
@@ -42,9 +42,10 @@ def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
         n = np.sqrt(mu / a**3)
         M = M0 + (n * delta_t)
         anomaly = kepEqtnE(M, ecc) #Eccentric Anomaly
+        anomaly = anomaly
         anomaly_type = "Eccentric"
         arg = (anomaly,)
-        arg2 = "none"
+
 #   Parabolic Case
     if ecc == 1:
         h_vec = np.linalg.cross(r0_vec, v0_vec)
@@ -55,7 +56,7 @@ def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
         r_mag = p / 2 * (1 + anomaly**2)
         anomaly_type = "Parabolic"
         arg = (anomaly, p, r_mag)
-        arg2 = "none"
+
 
 #   Hyperbolic Case
     if ecc > 1:
@@ -66,15 +67,17 @@ def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
         anomaly = kepeqtnH(M , ecc) # Hyperbolic Anomaly
         anomaly_type = "Hyperbolic"
         arg = (anomaly,)
-        arg2 = "none"
+
+
     if ecc != 0:
         # arg is E or H for Eccentric or Hyperbolic case but B,p, r for parabolic
         true_anomaly_new = anomaly2nu(ecc, anomaly_type, arg)
+        arg2 = "none"
     else:
         arg_latitude = anomaly
         arg2 = arg_latitude
 
-    r_vec_IJK, v_vec_IJK = COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, arg2)
+    r_vec_IJK, v_vec_IJK = COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly_new, mu, arg2)
 
     return r_vec_IJK, v_vec_IJK
 

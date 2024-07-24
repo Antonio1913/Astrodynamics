@@ -1,5 +1,15 @@
 
 
+# INPUTS
+#   r0_vec      - [1x3] initial position
+#   v0_vec      - [1x3] initial velocity
+#   p           - time frame of observation
+#   mu          - Gravitational Constant, km^3/s^2
+
+# OUTPUTS
+#   TOF         - Time of Flight, sec
+
+
 import numpy as np
 
 def FINDTOF(r0_vec, r_vec, p, mu):
@@ -33,7 +43,7 @@ def FINDTOF(r0_vec, r_vec, p, mu):
         delta_H = np.acosh(1 + ((f - 1)) * (r0_mag / a))
         TOF = g + (np.sqrt((-a)**3 / mu) * (np.sinh(delta_H) - delta_H))
 
-        return TOF
+    return TOF
 
 
 

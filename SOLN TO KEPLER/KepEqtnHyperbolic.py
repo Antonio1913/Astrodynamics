@@ -21,11 +21,14 @@ def kepeqtnH(M, e):
     for i in range(max_iterations):
         Hnplus1 = Hn + ((M - e * math.sinh(Hn) + Hn) / (e * math.cosh(Hn) - 1))
         if abs(Hnplus1 - Hn) < tolerance:
-            H = Hnplus1
+            H = Hnplus1 * (180 / math.pi)
             return H
         Hn = Hnplus1
     print(f"Warning: Tolerance not met after {max_iterations} iterations")
 
+
+
+#Test Case
 M = 235.4 * math.pi / 180
 e = 2.4
 H = kepeqtnH(M,e)
