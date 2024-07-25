@@ -39,7 +39,7 @@ def FINDTOF(r0_vec, r_vec, p, mu):
         TOF = 2/3 * np.sqrt(s**3 / 2 * mu) * (1 - ((s - c) / s)**(3/2))
 
 
-    else a < 0:
+    elif a < 0:
         delta_H = np.acosh(1 + ((f - 1)) * (r0_mag / a))
         TOF = g + (np.sqrt((-a)**3 / mu) * (np.sinh(delta_H) - delta_H))
 
