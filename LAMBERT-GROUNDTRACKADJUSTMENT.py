@@ -27,7 +27,7 @@ import numpy as np
 
 
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,
-                     r_min, r_max, D, incl, H_2, *arg, kappa, K):
+                     r_min, r_max, D, incl, H_2, kappa, K, *arg):
 
 #   Argument of Latitude of the Spacecrafts Initial Orbit at T1
     u_star = arg_perigee_star + true_anomaly_star
@@ -55,11 +55,13 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     adjustment = arg
 
     if adjustment == "AA":
-        theta = np.mod()
+        theta = np.mod(np.asin(np.sin(phi_G / np.sin(incl)) - u_1), 2 * np.pi)
 
     elif adjustment == "DA":
-
+        theta = np.mod(np.pi - (np.asin(np.sin(phi_G / np.sin(incl)) - u_1)), 2 * np.pi)
     else:
         print(f"Incorrect Orbit Adjustment. Only valid inputs, 'DA', 'AA'.")
+
+
 
 
