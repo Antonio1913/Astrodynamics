@@ -86,7 +86,7 @@ def RV2COE (r_ijk, v_ijk, mu):
     if r_ijk[1] < 0:
         lambda_true = (2 * math.pi) - lambda_true
 
-    return a, p, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true
+    return a, ecc, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true
 
 
 

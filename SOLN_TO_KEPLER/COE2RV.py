@@ -22,7 +22,7 @@ import numpy as np
 from FUNCTIONS.FUNCTIONS import Rot1, Rot3
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 
-def COE2RV (p, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):
+def COE2RV (a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):
     if len(args) > 2:
         raise ValueError(f"Too many inputs, ensure the only args inputted correspond to the type of orbit")
 
