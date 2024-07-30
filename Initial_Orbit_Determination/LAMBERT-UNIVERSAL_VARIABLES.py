@@ -66,3 +66,4 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     return v0_vec, v_vec
 
 
+#kfjfjjf
