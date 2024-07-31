@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-load_kernels()
-
+load_kernels('solar_system_kernels2.tm')
+# spice.furnsh('Astrodynamics/SPICE_KERNELS/solar_system_kernels.tm')
 ids, names, tcs_sec, tcs_cal = get_objects('SPICE_KERNELS/de440s.bsp', display=True)
 
 dates = ['1849 DEC 26 00:12:00', '2125 Dec 31 00:00:00']
