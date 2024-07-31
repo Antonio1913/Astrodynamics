@@ -14,7 +14,7 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     sin_delta_v = t_m * np.sqrt(1 - (cos_delta_v*2))
     A = t_m * np.sqrt(r_mag * r0_mag * (1 + cos_delta_v))
 
-    if A = 0:
+    if A == 0:
         raise ValueError("No Solution Available Given the Inputs.")
 
     psi_n = 0
@@ -66,4 +66,4 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     return v0_vec, v_vec
 
 
-#kfjfjjf
+
