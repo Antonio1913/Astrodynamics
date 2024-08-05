@@ -7,9 +7,9 @@ import os
 def load_kernels(metakernel_filename='solar_system_kernels.tm'):
     # Define the path to the metakernel file
     script_dir = os.path.dirname(__file__)
-    kernel_dir = os.path.join(script_dir, '..\\SPICE_KERNELS')
+    # kernel_dir = os.path.join(script_dir, '..\\SPICE_KERNELS')
     # kernel_dir = r'C:\Users\antonio.garcia\PycharmProjects\Astrodynamics\SPICE_KERNELS'
-    metakernel_path = os.path.join(kernel_dir, metakernel_filename)
+    metakernel_path = os.path.join(script_dir, metakernel_filename)
 
     # Ensure the metakernel file exists
     if not os.path.exists(metakernel_path):

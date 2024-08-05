@@ -14,7 +14,7 @@ dates = ['1849 DEC 26 00:12:00', '2125 Dec 31 00:00:00']
 
 et0 = spice.str2et(dates[0])
 etf = spice.str2et(dates[1])
-steps = 1000
+steps = 10000
 
 time_vec = tvlist2array(et0, etf, steps)
 
@@ -35,7 +35,8 @@ for name in names:
 #
 # plt.show()
 
-    orbitplot(body_data)
+
+orbitplot(body_data, names, AU=True)
 
 
 

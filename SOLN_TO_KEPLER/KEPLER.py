@@ -18,9 +18,15 @@
 
 import numpy as np
 from TOOLS.FUNCTIONS import arccot, sign
-from FIndC2C3 import findc2c3
+from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
+from SOLN_TO_KEPLER.FIndC2C3 import findc2c3
 
 def KEPLER(r0_vec, v0_vec, delta_t, mu):
+
+    # Ensures Correct Variable Structure
+    r0_vec = ensure_numpy_array(r0_vec)
+    v0_vec = ensure_numpy_array(v0_vec)
+
 
 #   Calculating the magnitude of the position and velocity
     r0_mag = np.linalg.norm(r0_vec)
@@ -95,16 +101,16 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 
 
-#test case
-r_ijk = np.array([1131.340, -2282.343, 6672.423])  # Position vector in kilometers
-v_ijk = np.array([-5.64305, 4.30333, 2.42879])   # Velocity vector in kilometers per second
-mu = 398600.4415  # Standard gravitational parameter for Earth in km^3/s^2
-delta_t = 40 * 60 # sec
-
-r_vec, v_vec = KEPLER(r_ijk, v_ijk, delta_t, mu)
-
-print(r_vec)
-print(v_vec)
+# #test case
+# r_ijk = np.array([1131.340, -2282.343, 6672.423])  # Position vector in kilometers
+# v_ijk = np.array([-5.64305, 4.30333, 2.42879])   # Velocity vector in kilometers per second
+# mu = 398600.4415  # Standard gravitational parameter for Earth in km^3/s^2
+# delta_t = 40 * 60 # sec
+#
+# r_vec, v_vec = KEPLER(r_ijk, v_ijk, delta_t, mu)
+#
+# # print(r_vec)
+# # print(v_vec)
 
 
 

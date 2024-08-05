@@ -20,7 +20,7 @@ def findc2c3(psi):
     elif psi< -1e-6:
         C2 = (1 - math.cosh(math.sqrt(-psi))) / psi
 
-        C3 =(math.sinh(math.sqrt(-psi)) - math.isqrt(-psi)) / (math.sqrt(-psi**3))
+        C3 =(math.sinh(math.sqrt(-psi)) - math.sqrt(-psi)) / (math.sqrt(-psi**3))
     else:
         C2 = 1/2
         C3 = 1/6
@@ -29,6 +29,6 @@ def findc2c3(psi):
 
 
 # ---------------------------------------------------------------------------
-psi_value = 0.0001
-C2, C3 = findc2c3(psi_value)
-print(f"C2 = {C2}, C3 = {C3}")
+# psi_value = 0.0001
+# C2, C3 = findc2c3(psi_value)
+# print(f"C2 = {C2}, C3 = {C3}")

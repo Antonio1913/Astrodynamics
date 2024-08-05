@@ -3,7 +3,7 @@ import numpy as np
 
 #arccot finds the inverse cotangent
 def arccot(x):
-    return math.atan(1/x)
+    return np.arctan(1/x)
 
 #Sign outputs the sign of the value, num, inputted
 def sign(num):
