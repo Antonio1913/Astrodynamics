@@ -17,7 +17,7 @@
 
 
 import numpy as np
-from FUNCTIONS.FUNCTIONS import arccot, sign
+from TOOLS.FUNCTIONS import arccot, sign
 from FIndC2C3 import findc2c3
 
 def KEPLER(r0_vec, v0_vec, delta_t, mu):

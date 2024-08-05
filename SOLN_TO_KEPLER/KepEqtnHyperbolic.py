@@ -9,7 +9,7 @@
 #   H           - Hyperbolic Anomaly, rad
 
 import math
-from FUNCTIONS.FUNCTIONS import sign
+from TOOLS.FUNCTIONS import sign
 
 def kepeqtnH(M, e):
     if e < 1.6:

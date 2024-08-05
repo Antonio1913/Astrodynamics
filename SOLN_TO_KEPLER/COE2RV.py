@@ -19,7 +19,7 @@
 
 
 import numpy as np
-from FUNCTIONS.FUNCTIONS import Rot1, Rot3
+from TOOLS.FUNCTIONS import Rot1, Rot3
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 
 def COE2RV (a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):

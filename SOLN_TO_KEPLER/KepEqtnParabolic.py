@@ -14,7 +14,7 @@
 
 import math
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth
-from FUNCTIONS.FUNCTIONS import arccot
+from TOOLS.FUNCTIONS import arccot
 
 def kepeqtnP(delta_t, p, mu):
     np = 2 * math.sqrt(mu / p**3) # mean motion of the parabolic orbit
