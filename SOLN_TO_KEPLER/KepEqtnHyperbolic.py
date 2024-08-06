@@ -29,6 +29,7 @@ def kepeqtnH(M, e):
         Hnplus1 = Hn + ((M - e * math.sinh(Hn) + Hn) / (e * math.cosh(Hn) - 1))
         if abs(Hnplus1 - Hn) < tolerance:
             H = Hnplus1
+            break
         Hn = Hnplus1
     print(f"Warning: Tolerance not met after {max_iterations} iterations")
 

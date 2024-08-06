@@ -18,7 +18,7 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     r_mag = np.linalg.norm(r_vec)
 
     cos_delta_v = np.dot(r0_vec, r_vec) / (r0_mag * r_mag)
-    delta_v =  np.acos(cos_delta_v)
+    delta_v = np.acos(cos_delta_v)
     sin_delta_v = t_m * np.sqrt(1 - (cos_delta_v*2))
     A = t_m * np.sqrt(r_mag * r0_mag * (1 + cos_delta_v))
 
@@ -74,80 +74,61 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     return v0_vec, v_vec
 
 
+
+
+# Testing Lambert Code
+
+# Loading Kernels
 load_kernels('solar_system_kernels.tm')
 
+# Timeline for Trajectory
 dates = ['2005 Dec 01 00:12:00', '2006 Mar 01 00:00:00']
 
+# Time in seconds
 et0 = spice.str2et(dates[0])
 etf = spice.str2et(dates[1])
 steps = 10000
 
+# Time Vector
 time_vec = tvlist2array(et0, etf, steps)
+
+# Change in time in seconds
 delta_t = etf - et0
+
+# Direction of Trajectory
 t_m = 1
-mu = 1.327 * 10 ** 11 # Suns gravitational constant
 
-# body_data= []
-#
-# body_data.append(ephemdata('EARTH BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN'))
-# body_data.append(ephemdata('VENUS BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN'))
-# names = ['EARTH BARYCENTER', 'VENUS BARYCENTER']
-#
-# orbitplot(body_data, names, animate=True)
+# Suns gravitational constant
+mu = 1.327 * 10 ** 11
 
+# Ephemeris Data For Planetary Bodies
 Earth_vec = ephemdata('EARTH BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN')
 Venus_vec = ephemdata('VENUS BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN')
+
+# Starting and Ending Position for Trajectory Analysis
 r0_vec = Earth_vec[0, :3]
 r_vec = Venus_vec[-1, :3]
 
+# Running Lambert Code
 v0_vec, v_vec = Lam_universe_var(r0_vec, r_vec, delta_t, t_m, mu)
 
+# Assigning the Position and Velocity Vector for Spacecraft
 spacecraft0 = r0_vec.tolist() + v0_vec.tolist()
 
+# Assigning the First State of Spacecraft before Propagation
 spacecraft_states = [spacecraft0]
-for i in range (1, len(time_vec)):
+
+# Propagating Spacecrafts Orbit
+for i in range(1, len(time_vec)):
     changetime = time_vec[i] - time_vec[i-1]
     r_vec_new, v_vec_new = KEPLER(spacecraft_states[-1][:3], spacecraft_states[-1][3:6], changetime, mu)
     spacecraft_states.append(r_vec_new.tolist() + v_vec_new.tolist())
-
-# print(spacecraft_states)
-# print(v0_vec)
-# print(v_vec)
 
 # Extract position vectors for plotting
 spacecraft_states = np.array(spacecraft_states)
 positions = spacecraft_states[:, :3]
 
-# Plot the trajectory
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(positions[:, 0], positions[:, 1], positions[:, 2], label='Spacecraft Trajectory')
-ax.plot(Earth_vec[:, 0], Earth_vec[:, 1], Earth_vec[:, 2], label='Earth Trajectory')
-ax.plot(Venus_vec[:, 0], Venus_vec[:, 1], Venus_vec[:, 2], label='Venus trajectory')
+#Naming and Plotting the Planetary and Spacecraft Data
+names = ['Earth', 'Venus', 'Spacecraft']
+orbitplot([Earth_vec[:, :3], Venus_vec[:, :3], positions[:, :3]], names)
 
-
-# Plot initial and final positions
-ax.plot([r0_vec[0]], [r0_vec[1]], [r0_vec[2]], 'o', label='Initial Position (Earth)')
-ax.plot([r_vec[0]], [r_vec[1]], [r_vec[2]], 'o', label='Final Position (Venus)')
-
-# Set equal scaling
-max_range = np.array([positions[:, 0].max() - positions[:, 0].min(),
-                      positions[:, 1].max() - positions[:, 1].min(),
-                      positions[:, 2].max() - positions[:, 2].min()]).max() / 2.0
-
-mid_x = (positions[:, 0].max() + positions[:, 0].min()) * 0.5
-mid_y = (positions[:, 1].max() + positions[:, 1].min()) * 0.5
-mid_z = (positions[:, 2].max() + positions[:, 2].min()) * 0.5
-
-ax.set_xlim(mid_x - max_range, mid_x + max_range)
-ax.set_ylim(mid_y - max_range, mid_y + max_range)
-ax.set_zlim(mid_z - max_range, mid_z + max_range)
-
-# Set labels
-ax.set_xlabel('X (km)')
-ax.set_ylabel('Y (km)')
-ax.set_zlabel('Z (km)')
-ax.legend()
-
-# Show the plot
-plt.show()

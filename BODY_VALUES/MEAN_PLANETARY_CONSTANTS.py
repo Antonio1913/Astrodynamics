@@ -11,6 +11,7 @@ class Earth:
     Earth_Orbital_Velocity = 29.7859 #km/s
     Earth_Radius = 6378.1363 #km
     Earth_flattening = 0.0033528131
+    Earth_eccentricity = 0.081819221456 # Shpe of Earth
     Earth_mu = 3.986004415 * 10**5 #km^3/s^2
     Earth_mass = 5.9742 * 10**24 #kg
     Earth_Rotation = 0.99726968 #days
