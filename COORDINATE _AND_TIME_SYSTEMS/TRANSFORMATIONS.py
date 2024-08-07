@@ -48,4 +48,30 @@ def ECEFtoLATLON(r_vec_ecef):
     return phi_gd, longitude, h_ellp
 
 
+#
+class TimeConversions:
+    solarday2siderealday = 1.002737909350795
+    siderealday2solarday = 0.997269566329084
+    solarday2siderealtime = r"24h 3m 56.5553678s"
+    siderealday2solartime = r"23h 56m 4.090524s"
 
+
+# This function takes the inputted date ranging from March 1, 1900 to February 28, 2100. If the day consisted of a leap
+# second use 61 seconds. The year must consist of four digits.
+
+#INPUT
+#   year                - 4 digit year ranging from 1900 to 2100
+#   month               - Starting from January as 1 to December as 12
+#   hour                - Using Military time or 24 hour timescale
+#   min                 - 60 min timescale
+#   sec                 - If day consists of leap second then use out of 61
+
+#OUTPUT
+#   JD                  - Julian Date in, days
+
+def JULIANDATE(year, month, day, hour, min, sec):
+    JD = (367 * year) - np.trunc((7 * (year + np.trunc((month + 9) / 12))) / 4) + np.trunc((275 * month) / 9) + day + 1721013.5 + (((((sec / 60) + min) / 60) + hour) / 24)
+    return JD
+
+JD = JULIANDATE(1996, 10, 26, 14, 20, 0)
+print(JD)

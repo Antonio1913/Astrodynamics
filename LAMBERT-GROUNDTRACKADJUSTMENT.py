@@ -1,5 +1,3 @@
-
-
 # INPUTS
 #   t1                          - Departing Time, sec
 #   a_star                      - Semi-Major Axis Before Maneuver, km
@@ -13,7 +11,7 @@
 #   r_min                       - Minimum Position Vector, km
 #   r_max                       - Maximum Position Vector, km
 #   D                           - Parameter (integer) of Time of Flight
-#   incl                        -
+#   incl                        - Desired Inclination Over Ground target or Intersection Point, rad
 #   H_2                         - Altitude at Time 2, km
 #   AA                          -
 #   kappa                       - Transfer Direction
@@ -55,7 +53,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 #   Argument of Latitude at Time 1
     u_1 = np.acos(np.dot(i_vec_Omega1, i_vec_r1))
 
-#   Calculating the Central Angle between Departing Point P1 and Arriving Point P2 and thre longitudinal difference
+#   Calculating the Central Angle between Departing Point P1 and Arriving Point P2 and their longitudinal difference
 #   between target G and the intersection G', delta_l
 #   Theta is Dependent on whether the input was for the ascending stage (AA) or descending stage (DA)
 
@@ -143,12 +141,12 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
         dLambda_F_dlambda = (sigma**-1 * y) - (lambda0**2 * y**-1) - (6 * np.sqrt(2) * s**(-3/2) * lambda0 * (1 +  lambda0**2)**-1 * zeta)
         dLambda_upsilon_dlambda = -np.pi**-1 * sigma**(3/2) * dLambda_F_dlambda
 
-        dLambda_F_da = (2 * np.sqrt(2 * E.Earth_mu) * B_M * a0**-3 * B_e**(-3/2) * s(-3/2) * tau_0) + (7 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-9/2) * B_e**-2 * s(-3/2) * tau_0 * zeta)
+        dLambda_F_da = (2 * np.sqrt(2 * E.Earth_mu) * B_M * a0**-3 * B_e**(-3/2) * s**(-3/2) * tau_0) + (7 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-9/2) * B_e**-2 * s(-3/2) * tau_0 * zeta)
         dLambda_upsilon_da = -np.pi**-1 * sigma**(3/2) * dLambda_F_da
 
         da_dlambda = -2 * a0 * lambda0 * (1 + lambda0**2)**-1
 
-        dLambda_F_dB_e = (1.5 * np.sqrt(2 * E.Earth_mu) * B_M * a0**(-2) * B_e**(5/2) * s(-3/2) * tau_0) + (4 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-7/2) * B_e**-3 * s**(-3/2) * tau_0 * zeta)
+        dLambda_F_dB_e = (1.5 * np.sqrt(2 * E.Earth_mu) * B_M * a0**(-2) * B_e**(5/2) * s**(-3/2) * tau_0) + (4 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-7/2) * B_e**-3 * s**(-3/2) * tau_0 * zeta)
         dLambda_Upsilon_dB_e = -np.pi**-1 * sigma**(3/2) * dLambda_F_dB_e
 
         dB_e_dlambda = (-8 * sigma * ((s**2 * lambda0**5 * sigma) + (lambda0**3 * ((s**2 * y**2) -
@@ -206,9 +204,77 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
         lambda0 = lambdaplus1
         x0 = xplus1
 
+    # Calculating dUpsilon/dx using the lambda_star and x_star values that was found using iterations
+    sigma_star = 1 - x_star**2
+    y_star = np.sqrt(1 - lambda_star**2 * (1 - x_star **2))
+    s_star = (r1 + r2) / (1 + lambda_star**2)
+    cos_psi = (x_star * y_star) + (lambda_star * (1 - x_star**2))
 
-    Nmaxtype1 =
+    # Calculating Auxiliary Function, W
+    W = lambda_star - (np.sqrt(r1 * r2)) ** -1 * np.cos(((theta_C0 - (omeegadot_J2 * tau_0)) / 2) + (np.pi * K))
 
+    # Calculating partial derivatives
+    dLambda_F_dlambda_star = (sigma_star ** -1 * y_star) - (lambda_star ** 2 * y_star ** -1) - (6 * np.sqrt(2) * s_star ** (-3 / 2) * lambda_star * (1 + lambda_star ** 2) ** -1 * zeta)
+    dLambda_upsilon_dlambda_star = -np.pi ** -1 * sigma_star ** (3 / 2) * dLambda_F_dlambda_star
+
+    dLambda_F_da_star = (2 * np.sqrt(2 * E.Earth_mu) * B_M * a0 ** -3 * B_e ** (-3 / 2) * s_star**(-3 / 2) * tau_0) + (
+            7 * np.sqrt(2) * B_Omega * delta_l ** -1 * a0 ** (-9 / 2) * B_e ** -2 * s_star(-3 / 2) * tau_0 * zeta)
+
+    dLambda_upsilon_da_star = -np.pi ** -1 * sigma_star**(3 / 2) * dLambda_F_da_star
+
+    da_dlambda_star = -2 * a0 * lambda_star * (1 + lambda_star**2) ** -1
+
+    dLambda_F_dB_e_star = (1.5 * np.sqrt(2 * E.Earth_mu) * B_M * a0 ** (-2) * B_e ** (5 / 2) * s_star*(-3 / 2) * tau_0) + (
+            4 * np.sqrt(2) * B_Omega * delta_l ** -1 * a0 ** (-7 / 2) * B_e ** -3 * s_star**(-3 / 2) * tau_0 * zeta)
+
+    dLambda_Upsilon_dB_e_star = -np.pi ** -1 * sigma_star ** (3 / 2) * dLambda_F_dB_e_star
+
+    dB_e_dlambda_star = (-8 * sigma_star * ((s_star**2 * lambda_star ** 5 * sigma_star) + (lambda_star ** 3 * ((s_star** 2 * y_star ** 2) -
+                    (sigma_star * ((r1 * r2) - s_star** 2)))) + (lambda_star * (y_star** 2 * (s_star** 2 - (2 * r1 * r2)) - ((r1 * r2 * sigma_star)))) -
+                    (r1 * r2 * x_star * y_star * (1 - lambda_star** 2)))) / (s_star**2 * (1 + lambda_star**2) * (y_star - (lambda_star * x_star))**3 * y_star)
+
+    dLambda_Upsilon_dpsi_star = -np.pi ** -1
+
+    dpsi_dlambda_star = (((lambda_star * x_star**2) - (x_star * y_star) - lambda_star) * sigma_star**(1 / 2) * y_star**-1) / cos_psi
+
+    dLambda_Upsilon_dx_star = np.pi ** -1 * ((-6 * np.sqrt(2) * s_star**(-3 / 2) * x_star * sigma_star**(1 / 2) * zeta) + (
+            (1 - (lambda_star**3 * x_star * y_star**-1)) * sigma_star**(1 / 2)) - ((x_star - (lambda_star * y_star)) * x_star * sigma_star**(-1 / 2)))
+
+    da_dx_star = 2 * a0 * x_star * sigma_star**-1
+
+    dB_e_d_x_star = -2 * B_e * ((-lambda_star * y_star**-1) + (x_star * sigma_star**-1))
+
+    dPsi_dx_star = (((x_star - (2 * x_star * y_star**2)) + (((2 * lambda_star * x_star**2) - lambda_star) * y_star)) * sigma_star**(-1 / 2) * y_star**-1) / cos_psi
+
+    dLambda_W_dx = 0
+
+    dLambda_W_da_star = (7 / 4) * np.sqrt(r1 * r2) * B_omega * a0 ** (-9 / 2) * B_e ** (-2) * s_star**(-1) * tau_0 * (1 + (B_Omega * a0**(-7 / 2) * B_e**(-2) * delta_l**(-1) * tau_0)) * np.sin(theta_ck / 2)
+
+    dLambda_W_d_B_e_star = np.sqrt(r1 * r2) * B_omega * a0 ** (-7 / 2) * B_e ** (-3) * s_star**(-1) * tau_0 * (1 + (B_Omega * a0 ** (-7 / 2) * B_e ** (-2) * delta_l ** (-1) * tau_0)) * np.sin(theta_ck / 2)
+
+    dLambda_W_dlambda_star = (1 - lambda_star**2 + (2 * lambda_star * W)) * (1 + lambda_star** 2)**-1
+
+
+    # Values needed to calculate dUpsilon_dx
+    dPsi_Upsilon_dlambda_star = dLambda_upsilon_dlambda_star + (dLambda_upsilon_da_star * da_dlambda_star) + (dLambda_Upsilon_dB_e_star * dB_e_dlambda_star) + (dLambda_Upsilon_dpsi_star * dpsi_dlambda_star)
+    dPsi_Upsilon_dx_star = dLambda_Upsilon_dx_star + (dLambda_upsilon_da_star * da_dx_star) + (dLambda_Upsilon_dB_e_star * dB_e_d_x_star) + (dLambda_Upsilon_dpsi_star * dPsi_dx_star)
+
+    #   Values needed to calculate dlambda_dx
+    dW_dx_star = dLambda_W_dx + (dLambda_W_da_star * da_dx_star) + (dLambda_W_d_B_e_star * dB_e_d_x_star)
+    dW_dlambda_star = dLambda_W_dlambda_star + (dLambda_W_da_star * da_dlambda_star) + (dLambda_W_d_B_e_star * dB_e_dlambda_star)
+    dlambda_dx_star = -dW_dx_star / dW_dlambda_star
+
+    dUpsilon_dx_star = (dPsi_Upsilon_dlambda_star * dlambda_dx_star) + dPsi_Upsilon_dx_star
+
+    # Max Number of Revolutions Type 1
+    Nmaxtype1 = dUpsilon_dx_star
+
+    r_min_exp = r_min**(-7 / 2)
+    r_max_exp = r_max**(-7 / 2)
+
+    #  Rate of Change of Right Ascension of the Ascending Node due to J2 Perturbation (Max and Min)
+    B_J2 = 1.5 * E.Earth_J2 * E.Earth_Radius**2 * np.sqrt(E.Earth_mu)
+    omega_J2_min =
 
 
 
