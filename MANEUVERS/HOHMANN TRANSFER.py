@@ -1,17 +1,19 @@
 
 import numpy as np
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
-from TOOLS.PROP
+from TOOLS.PROPAGATION_TOOLS import OrbitProp
+from TOOLS.PLOTTING_TOOLS import orbitplot
+from SOLN_TO_KEPLER.COE2RV import COE2RV
 
 
-def HohmannTransfer(r_inital, r_final, mu):
+def HohmannTransfer(r_initial, r_final, mu):
 
     # Semi Major Axis of the Transfer Orbit
-    a_trans = (r_inital + r_final) / 2
+    a_trans = (r_initial + r_final) / 2
 
     # Initial Velocity and Initial Velocity Transfer
-    v_int = np.sqrt(E.Earth_mu / r_inital)
-    v_transa = np.sqrt(((2 * E.Earth_mu) / r_inital) - (E.Earth_mu / a_trans))
+    v_int = np.sqrt(E.Earth_mu / r_initial)
+    v_transa = np.sqrt(((2 * E.Earth_mu) / r_initial) - (E.Earth_mu / a_trans))
 
     # Final Velcoity and Final Velocity Transfer
     v_final = np.sqrt(E.Earth_mu / r_final)
@@ -45,3 +47,28 @@ mu = E.Earth_mu
 
 
 r_vec_IJK, v_vec_IJK = COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, "lambda_true", 0)
+pos_sat = r_vec_IJK.tolist() + v_vec_IJK.tolist()
+r_mag = np.linalg.norm(r_vec_IJK)
+period_sat = 2 * np.pi * (np.sqrt(r_mag**3 / mu))
+time_vec = np.linspace(0, period_sat, 1000)
+
+pos_states, positions = OrbitProp(time_vec, pos_sat, mu)
+print(positions)
+
+
+# orbitplot(positions, 'satellite')
+
+r_initial = r_mag
+r_final = r_mag + 6000
+
+a_trans, tau_trans, delta_va, delta_vb = HohmannTransfer(r_initial, r_final, mu)
+
+pos_sat1 = pos_sat.copy()
+pos_sat1[4] += delta_va
+period_sat1 = 2 * np.pi * np.sqrt(a_trans**3 / mu)
+time_vec1 = np.linspace(0, period_sat1, 1000)
+pos_states1, positions1 = OrbitProp(time_vec1, pos_sat1, mu)
+# orbitplot(positions1, 'satellite')
+
+orbitplot([positions, positions1], ['initial orbit', 'transfer'])
+

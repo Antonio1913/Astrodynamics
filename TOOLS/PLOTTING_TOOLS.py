@@ -4,7 +4,7 @@ import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def orbitplot(body_data, names, AU = False, equalscale=True):
+def orbitplot(body_data, names, AU = False):
 
     #Defining the Conversion between AU and Km
     km2AU = 1.496*10**8
@@ -38,34 +38,60 @@ def orbitplot(body_data, names, AU = False, equalscale=True):
     max_zlim = [-float('inf'), float('inf')]
 
     # Plotting the Inputted Data with Label and Marking Initial Position
-    if AU:
-        for i, bodies in enumerate(body_data):
-            ax.plot(bodies[:, 0] / km2AU, bodies[:, 1] / km2AU, bodies[:, 2] / km2AU, label=names[i])
-            ax.plot([bodies[0, 0] / km2AU], [bodies[0, 1] / km2AU], [bodies[0, 2] / km2AU], 'o')
+    if isinstance(body_data, list):
 
-            # Finding Limit of One Set of Data
-            set_xlim, set_ylim, set_zlim = equalaxis(bodies)
+        if AU:
+            for i, bodies in enumerate(body_data):
+                ax.plot(bodies[:, 0] / km2AU, bodies[:, 1] / km2AU, bodies[:, 2] / km2AU, label=names[i])
+                ax.plot([bodies[0, 0] / km2AU], [bodies[0, 1] / km2AU], [bodies[0, 2] / km2AU], 'o')
 
-            # Updating Limit To Account For All Groups of Data
-            max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
-            max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
-            max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
+                # Finding Limit of One Set of Data
+                set_xlim, set_ylim, set_zlim = equalaxis(bodies)
 
+                # Updating Limit To Account For All Groups of Data
+                max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
+                max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
+                max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
+
+
+        else:
+            for i, bodies in enumerate(body_data):
+                ax.plot(bodies[:, 0], bodies[:, 1], bodies[:, 2], label=names[i])
+                ax.plot([bodies[0, 0]], [bodies[0, 1]], [bodies[0, 2]], 'o')
+
+                # Finding Limit of One Set of Data
+                set_xlim, set_ylim, set_zlim = equalaxis(bodies)
+
+                # Updating Limit To Account For All Groups of Data
+                max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
+                max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
+                max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
 
     else:
-        for i, bodies in enumerate(body_data):
-            ax.plot(bodies[:, 0], bodies[:, 1], bodies[:, 2], label=names[i])
-            ax.plot([bodies[0, 0]], [bodies[0, 1]], [bodies[0, 2]], 'o')
+        if AU:
+            ax.plot(body_data[:, 0] / km2AU, body_data[:, 1] / km2AU, body_data[:, 2] / km2AU, label=names)
+            ax.plot([body_data[0, 0] / km2AU], [body_data[0, 1] / km2AU], [body_data[0, 2] / km2AU], 'o')
 
             # Finding Limit of One Set of Data
-            set_xlim, set_ylim, set_zlim = equalaxis(bodies)
+            set_xlim, set_ylim, set_zlim = equalaxis(body_data)
 
             # Updating Limit To Account For All Groups of Data
             max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
             max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
             max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
 
-            # mid_xlim =
+
+        else:
+            ax.plot(body_data[:, 0], body_data[:, 1], body_data[:, 2], label=names)
+            ax.plot([body_data[0, 0]], [body_data[0, 1]], [body_data[0, 2]], 'o')
+
+            # Finding Limit of One Set of Data
+            set_xlim, set_ylim, set_zlim = equalaxis(body_data)
+
+            # Updating Limit To Account For All Groups of Data
+            max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
+            max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
+            max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
 
     # Setting Axis Limits
     ax.set_xlim(max_xlim)

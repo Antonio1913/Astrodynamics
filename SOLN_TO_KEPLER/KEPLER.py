@@ -34,7 +34,7 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
 #   Saved value to decrease the number of calculations
     sqrtmu = np.sqrt(mu)
-    val1 = np.dot(r0_vec, v0_vec) / sqrtmu
+    val1 = np.dot(r0_vec.T, v0_vec) / sqrtmu
     val2 = sqrtmu * delta_t
 
 #   orbits specific mechanical energy
