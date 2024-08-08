@@ -52,12 +52,12 @@ def COE2RV (a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):
         raise ValueError(f"Unexpected value for args {args}")
 
 #   Vector array of the position of the body in the PQW axis
-    r_PQW = np.array([[(p * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly)))],
-                      [(p * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly)))],
+    r_PQW = np.array([[(a * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly)))],
+                      [(a * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly)))],
                           [0]])
 
-    v_PQW = np.array([[-np.sqrt(mu / p) * np.sin(true_anomaly)],
-                        [np.sqrt(mu / p) * (ecc + np.cos(true_anomaly))],
+    v_PQW = np.array([[-np.sqrt(mu / a) * np.sin(true_anomaly)],
+                        [np.sqrt(mu / a) * (ecc + np.cos(true_anomaly))],
                         [0]])
 #   Rotation operation in order to get the vectors in the geocentric equatorial system
     Rotations = np.dot(Rot3(-ascending_node), np.dot(Rot1(-incl), Rot3(-arg_perigee)))
