@@ -11,7 +11,7 @@
 #   r_min                       - Minimum Position Vector, km
 #   r_max                       - Maximum Position Vector, km
 #   D                           - Parameter (integer) of Time of Flight
-#   incl                        - Desired Inclination Over Ground target or Intersection Point, rad
+#   incl                        - Desired Inclination Over Ground target or Intersection Point ranging from (0,pi), rad
 #   H_2                         - Altitude at Time 2, km
 #   AA                          -
 #   kappa                       - Transfer Direction
@@ -23,10 +23,13 @@
 import numpy as np
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 from SOLN_TO_KEPLER.COE2RV import COE2RV
-
+from TOOLS.FUNCTIONS import DoubleRangeValue, withinrange
 
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,
                      r_min, r_max, D, incl, H_2, kappa, K, *arg):
+
+    if incl in range(0, np.pi) == False:
+        raise ValueError("Desired Inclination is not within (0, pi).")
 
 #   Defining r1 using the initial Satellite Parameters
     r1_vec, v1_vec = COE2RV (a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.Earth_mu, "none")
@@ -270,11 +273,60 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     Nmaxtype1 = dUpsilon_dx_star
 
     r_min_exp = r_min**(-7 / 2)
+    r_min_exp2 = r_min ** (-3 / 2)
     r_max_exp = r_max**(-7 / 2)
+    r_max_exp2 = r_max ** (-3 / 2)
 
     #  Rate of Change of Right Ascension of the Ascending Node due to J2 Perturbation (Max and Min)
     B_J2 = 1.5 * E.Earth_J2 * E.Earth_Radius**2 * np.sqrt(E.Earth_mu)
-    omega_J2_min =
+
+    #Determining whether desired inclination is within ranges
+    value = DoubleRangeValue(incl, (0, np.asin(2 / 3) ** (1 / 2)), (np.pi - np.asin(2 / 3) ** (1 / 2), np.pi))
+    value2 = withinrange(incl, np.asin(2 / 3) ** (1 / 2), np.pi - np.asin(2 / 3) ** (1 / 2))
+
+    if value.is_within_ranges() == True or value2.is_within_ranges() == True:
+
+        psi = 1.5 * np.sin(incl ** 2 - 1)
+
+        if incl in range(0, np.pi/2):
+            omega_J2_min = -B_J2 * r_min_exp * np.cos(incl)
+            omega_J2_max = -B_J2 * r_max_exp * np.cos(incl)
+        else:
+            omega_J2_min = -B_J2 * r_max_exp * np.cos(incl)
+            omega_J2_max = -B_J2 * r_min_exp * np.cos(incl)
+
+        if value.is_within_ranges() == True:
+            nplusMJ2_min = (E.Earth_mu**(1/2) * r_max_exp2) - (B_J2 * r_max_exp * psi)
+            nplusMJ2_max = (E.Earth_mu**(1/2) * r_min_exp2) - (B_J2 * r_min_exp * psi)
+
+        else:
+            nplusMJ2_min = (E.Earth_mu ** (1 / 2) * r_max_exp2) - (B_J2 * r_min_exp * psi)
+            nplusMJ2_max = (E.Earth_mu ** (1 / 2) * r_min_exp2) - (B_J2 * r_max_exp * psi)
+
+    else:
+        omega_J2_min = -B_J2 * r_min_exp
+        omega_J2_max = -B_J2 * r_max_exp
+        nplusMJ2_min = (E.Earth_mu ** (1 / 2) * r_max_exp2) - (0.5 * B_J2 * r_min_exp)
+        nplusMJ2_max = (E.Earth_mu ** (1 / 2) * r_min_exp2) + (0.5 * B_J2 * r_max_exp)
+
+    Nmintype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_min / (E.Earth_angularvelocity - omega_J2_max))
+    Nmaxtype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_max / (E.Earth_angularvelocity - omega_J2_min))
+
+    # Minimmum and Maximum Number of Revolutions
+    Nmax = min(Nmaxtype1, Nmaxtype2)
+    Nmin = Nmintype2
+
+    for i in range(Nmin, Nmax):
+        if N == 0:
+
+
+
+
+
+
+
+
+
 
 
 

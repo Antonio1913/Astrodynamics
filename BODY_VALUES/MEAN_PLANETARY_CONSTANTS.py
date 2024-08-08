@@ -17,6 +17,7 @@ class Earth:
     Earth_Rotation = 0.99726968 #days
     Earth_Incl_equatorial = 23.45 #degrees
     Earth_J2 = 0.0010826269
+    Earth_angularvelocity = 7.2722 * 10**-5 # rad/s
 
 class Semi_Major_Axis:
     Moon_SMA = 384400

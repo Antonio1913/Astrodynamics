@@ -31,3 +31,19 @@ def Rot3(alpha):
                       [-np.sin(alpha), np.cos(alpha), 0],
                                         [0, 0, 1]])
     return matrix
+
+
+class DoubleRangeValue:
+    def __init__(self, value, range1, range2):
+        self.value = value
+        self.range1 = range1
+        self.range2 = range2
+
+    def is_within_ranges(self):
+        return (self.range1[0] <= self.value <= self.range1[1]) or (self.range2[0] <= self.value <= self.range2[1])
+
+    def __repr__(self):
+        return f"DoubleRangeValue(value={self.value}, range1={self.range1}, range2={self.range2})"
+
+def withinrange(value, start, end):
+    return start <= value <= end
