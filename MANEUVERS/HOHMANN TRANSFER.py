@@ -68,7 +68,23 @@ pos_sat1[4] += delta_va
 period_sat1 = 2 * np.pi * np.sqrt(a_trans**3 / mu)
 time_vec1 = np.linspace(0, period_sat1, 1000)
 pos_states1, positions1 = OrbitProp(time_vec1, pos_sat1, mu)
-# orbitplot(positions1, 'satellite')
 
-orbitplot([positions, positions1], ['initial orbit', 'transfer'])
+positions1_mag = np.linalg.norm(positions1, axis=1)
+max_pos1 = np.argmax(positions1_mag)
+positions1_transfer = positions1[0:max_pos1, :]
+
+# Second Burn To Maintain Transfer Orbit
+pos_state2 = pos_states1[max_pos1+1, :]
+pos_state2[4] -= delta_vb
+pos_state2_mag = np.linalg.norm(pos_state2[0:2, :])
+period_sat2 = 2 * np.pi * (np.sqrt(pos_state2_mag**3 / mu))
+time_vec2 = np.linspace(0, period_sat2, 1000)
+
+pos_states2, positions2 = OrbitProp(time_vec2, pos_state2, mu)
+
+
+orbitplot([positions, positions1_transfer, positions2], ['initial orbit', 'transfer', 'new orbit'])
+
+
+
 
