@@ -26,18 +26,18 @@ import numpy as np
 
 def RV2COE (r_ijk, v_ijk, mu):
     # Angular Momentum
-    h_vec = np.cross(r_ijk, v_ijk) # km^2/s
+    h_vec = np.cross(r_ijk.T, v_ijk.T).T # km^2/s
     h_mag = np.linalg.norm(h_vec) # km^2/s
 
     # Node Vector
-    k_vec = np.array([0, 0, 1])
-    n_vec = np.cross(k_vec, h_vec) # km^2/s
+    k_vec = np.array([[0, 0, 1]])
+    n_vec = np.cross(k_vec, h_vec.T).T # km^2/s
     n_mag = np.linalg.norm(n_vec) # km^2/s
 
     # Eccentricity
     pos_mag = np.linalg.norm(r_ijk) # km
     vel_mag = np.linalg.norm(v_ijk) # km/s
-    ecc_vec = (((vel_mag**2 - (mu / pos_mag)) * r_ijk) - (np.dot(r_ijk, v_ijk) * v_ijk)) / mu
+    ecc_vec = (((vel_mag**2 - (mu / pos_mag)) * r_ijk) - (np.dot(r_ijk.T, v_ijk) * v_ijk)) / mu
     ecc = np.linalg.norm(ecc_vec)
 
     # Specific Orbital Energy
@@ -56,18 +56,23 @@ def RV2COE (r_ijk, v_ijk, mu):
     incl = (np.acos(h_vec[2] / h_mag))
 
     #Ascending Node
-    ascending_node = (np.acos(n_vec[0] / n_mag))
+    if n_mag > 0:
+        ascending_node = (np.acos(n_vec[0] / n_mag))
+    else:
+        ascending_node = 0
+
     if n_vec[1] < 0:
         ascending_node = (2 * math.pi) - ascending_node
 
     # Argument of Perigee
-    arg_perigee = (np.acos(np.dot(n_vec, ecc_vec) / (n_mag * ecc)))
+    arg_perigee = (np.acos(np.dot(n_vec.T, ecc_vec) / (n_mag * ecc)))
     if ecc_vec[2] < 0:
         arg_perigee = (2 * math.pi) - arg_perigee
 
+
     # True Anomaly
-    true_anomaly = (np.acos(np.dot(ecc_vec, r_ijk) / (ecc * pos_mag)))
-    if np.dot(r_ijk, v_ijk) < 0:
+    true_anomaly = (np.acos(np.dot(ecc_vec.T, r_ijk) / (ecc * pos_mag)))
+    if np.dot(r_ijk.T, v_ijk) < 0:
         true_anomaly = (2 * math.pi) - true_anomaly
 
     #Special Cases
@@ -77,7 +82,7 @@ def RV2COE (r_ijk, v_ijk, mu):
         arg_perigee_true = (2 * math.pi) - arg_perigee_true
 
     # Circular Inclined - Argument of Latitude
-    arg_latitude = (np.acos(np.dot(n_vec, r_ijk) / (n_mag * pos_mag)))
+    arg_latitude = (np.acos(np.dot(n_vec.T, r_ijk) / (n_mag * pos_mag)))
     if r_ijk[2] < 0:
         arg_latitude = (2 * math.pi) - arg_latitude
 

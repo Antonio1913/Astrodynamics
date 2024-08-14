@@ -4,6 +4,7 @@ from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 from TOOLS.PROPAGATION_TOOLS import OrbitProp
 from TOOLS.PLOTTING_TOOLS import orbitplot
 from SOLN_TO_KEPLER.COE2RV import COE2RV
+from SOLN_TO_KEPLER.Rv2COE import RV2COE
 
 
 def HohmannTransfer(r_initial, r_final, mu):
@@ -55,11 +56,12 @@ time_vec = np.linspace(0, period_sat, 1000)
 pos_states, positions = OrbitProp(time_vec, pos_sat, mu)
 print(positions)
 
+a1, ecc1, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(pos_states[0, 0:3], pos_states[0, 3:6], mu)
 
 # orbitplot(positions, 'satellite')
 
 r_initial = r_mag
-r_final = r_mag + 6000
+r_final = r_mag + 500
 
 a_trans, tau_trans, delta_va, delta_vb = HohmannTransfer(r_initial, r_final, mu)
 
@@ -74,7 +76,7 @@ max_pos1 = np.argmax(positions1_mag)
 positions1_transfer = positions1[0:max_pos1, :]
 
 # Second Burn To Maintain Transfer Orbit
-pos_state2 = pos_states1[max_pos1+1, :]
+pos_state2 = pos_states1[max_pos1, :]
 pos_state2[4] -= delta_vb
 pos_state2_mag = np.linalg.norm(pos_state2[0:2, :])
 period_sat2 = 2 * np.pi * (np.sqrt(pos_state2_mag**3 / mu))
@@ -85,6 +87,7 @@ pos_states2, positions2 = OrbitProp(time_vec2, pos_state2, mu)
 
 orbitplot([positions, positions1_transfer, positions2], ['initial orbit', 'transfer', 'new orbit'])
 
+a2, ecc2, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(pos_states2[0, 0:3], pos_states2[0, 3:6], mu)
 
-
-
+print(a2)
+print(ecc2)
