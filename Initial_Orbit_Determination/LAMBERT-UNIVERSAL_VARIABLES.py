@@ -82,7 +82,7 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
 load_kernels('solar_system_kernels.tm')
 
 # Timeline for Trajectory
-dates = ['2005 Dec 01 00:12:00', '2006 Mar 01 00:00:00']
+dates = ['2005 Dec 01 00:12:00', '2009 Mar 01 00:00:00']
 
 # Time in seconds
 et0 = spice.str2et(dates[0])
@@ -96,14 +96,14 @@ time_vec = tvlist2array(et0, etf, steps)
 delta_t = etf - et0
 
 # Direction of Trajectory
-t_m = 1
+t_m = -1
 
 # Suns gravitational constant
 mu = 1.327 * 10 ** 11
 
 # Ephemeris Data For Planetary Bodies
 Earth_vec = ephemdata('EARTH BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN')
-Venus_vec = ephemdata('VENUS BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN')
+Venus_vec = ephemdata('JUPITER BARYCENTER', time_vec, 'ECLIPJ2000', 'SUN')
 
 # Starting and Ending Position for Trajectory Analysis
 r0_vec = Earth_vec[0, :3]

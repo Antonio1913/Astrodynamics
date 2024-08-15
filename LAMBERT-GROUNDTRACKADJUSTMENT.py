@@ -28,11 +28,13 @@ from TOOLS.FUNCTIONS import DoubleRangeValue, withinrange
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,
                      r_min, r_max, D, incl, H_2, kappa, K, *arg):
 
+# Ensures Inclination is within [0, pi]
     if incl in range(0, np.pi) == False:
         raise ValueError("Desired Inclination is not within (0, pi).")
 
+# Step 1 Defining Omega, u, theta, delta_l, lambda_max
 #   Defining r1 using the initial Satellite Parameters
-    r1_vec, v1_vec = COE2RV (a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.Earth_mu, "none")
+    r1_vec, v1_vec = COE2RV (a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.mu, "none")
     r1 = np.linalg.norm(r1_vec)
 
 #   Argument of Latitude of the Spacecrafts Initial Orbit at T1
@@ -41,7 +43,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 #   Phi_1 = Phi_star - Geocentric Latitude of the Departing Point P1
     phi_star = np.asin(np.sin(incl_star) * np.sin(u_star))
 
-#   Right Ascension of the Ascending Node at Time 1 at the time of Impulsive Maneuver
+#   Right Ascension of the Ascending Node at Time 1 at the time of Impulsive Maneuver (EQUATION 1)
     ascending_node_1 = (ascending_node_star + (np.asin(np.tan(phi_star) / np.tan(incl_star))) -
                         (kappa * (np.asin(np.tan(phi_star) / np.tan(incl)))) + ((1 - kappa) * (np.pi / 2)))
 
@@ -53,7 +55,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
                          (np.sin(ascending_node_star) * np.cos(u_star)) + (np.cos(ascending_node_star) * np.sin(u_star) * np.cos(incl_star)),
                          np.sin(u_star) * np.sin(incl_star)])
 
-#   Argument of Latitude at Time 1
+#   Argument of Latitude at Time 1 (EQUATION 3)
     u_1 = np.acos(np.dot(i_vec_Omega1, i_vec_r1))
 
 #   Calculating the Central Angle between Departing Point P1 and Arriving Point P2 and their longitudinal difference
@@ -64,6 +66,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 
     Theta_gmst_t1 =
 
+# (EQUATION 4 and 6), Finding theta and delta_l
     if arg == "AA":
         theta = np.mod(np.asin(np.sin(phi_G / np.sin(incl)) - u_1), 2 * np.pi)
         delta_l = np.mod(ascending_node_1 + (np.asin(np.tan(phi_G) / np.tan(incl))) - L_G - Theta_gmst_t1, 2 * np.pi) + 2 * np.pi * D
@@ -75,49 +78,58 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     else:
         print(f"Incorrect Orbit Adjustment. Only valid inputs, 'DA', 'AA'.")
 
-#   Defining the two position vectors
-    r2 = E.Earth_Radius + H_2
+#   Defining the two position vectors (EQUATION 28)
+    r2 = E.Radius + H_2
     lambda_max = np.sqrt((r1 + r2 - abs(r1 - r2)) / (r1 + r2 + abs(r1 - r2)))
 
-#Determining Keplerian Starters, lambda, x0
-# Step 1 - Setting a0 = a_star, ecc0 = ecc_star
+#STEP 2 COMPUTING tau_0, theta_c0, s_0, lambda_0
+    #Determining Keplerian Starters, lambda, x0
+    # Step 1 - Setting a0 = a_star, ecc0 = ecc_star using initial orbital data
     a0 = a_star
     ecc0 = ecc_star
 
-# Step 2 - Solving Equations 5 and 9 to compute TOF
-#   Calculating the secular drift rate of the right ascension of the ascending node caused by J2 Perturbation
-    B_Omega = 1.5 * E.Earth_J2 * E.Earth_Radius**2 * np.sqrt(E.Earth_mu) * np.cos(incl)
+    # Step 2 - Solving Equations 5 and 9 to compute TOF
+    # Calculating the secular drift rate of the right ascension of the ascending node caused by J2 Perturbation
+    B_Omega = 1.5 * E.J2 * E.Radius**2 * np.sqrt(E.mu) * np.cos(incl)
     B_e = 1 - ecc0**2
 
+    # (EQUATION 7)
     Omega_J2 = B_Omega * a0**(-7 / 2) * B_e**-2
 
 #   Secular drift rate of the argument of perigee caused by J2 Perturbation
-    B_omega = -1.5 * E.Earth_J2 * E.Earth_Radius**2 * np.sqrt(E.Earth_mu) * ((2.5 * np.sin(incl**2)) - 2)
-    omeegadot_J2 = B_omega * a0**(-7 / 2) * B_e**-2
+    B_omega = -1.5 * E.J2 * E.Radius**2 * np.sqrt(E.mu) * ((2.5 * np.sin(incl**2)) - 2)
+    omegadot_J2 = B_omega * a0**(-7 / 2) * B_e**-2
 
-#   Initial Guess for TOF
-    tau_0 = delta_l / (E.Earth_Rotation - Omega_J2)
+#   Initial Guess for TOF (EQUATION 5)
+    tau_0 = delta_l / (E.Rotation - Omega_J2)
 
-#   Rotation Angle Between t1 and t2 of the Flyby Orbit
-    theta_omega = omeegadot_J2 * tau_0
+#   Rotation Angle Between t1 and t2 of the Flyby Orbit (EQUATION 8)
+    theta_omega = omegadot_J2 * tau_0
 
-#   Auxiliary Angle
+    # Auxiliary Angle (EQUATION 10)
     theta_C_hat = theta - theta_omega
 
-#Ensuring input is within range
+    # Ensuring input is within range
     low_range_k = -theta_C_hat / (2 * np.pi)
     upper_range_k = 1 - (theta_C_hat / (2 * np.pi))
     if K < low_range_k or K > upper_range_k:
         print(f"K input is not an ideal value with other input parameters.")
 
-#   Initial Guess for Transfer angle
+#   Initial Guess for Transfer angle (EQUATION 9)
     theta_C0 = np.mod(theta_C_hat, 2 * np.pi)
 
-#   Replacing Theta_C with theta_C0 in Equations 15 21 26 to compute initial guesses for Semi perimeter and the parameter lambda
+# STEP 3 EQNS 15, 21, 26 TO COMPUTE INITIAL GUESSES
+    # Replacing Theta_C with theta_C0 in Equations 15 21 26 to compute initial guesses for Semi perimeter and the parameter lambda
+    # (EQUATION 15)  with initial values
     c = np.sqrt((r1 + r1)**2 - 4 * r1 *r2 * np.cos((theta_C0 / 2)**2))
+
+    # (EQUATION 21)
     s0 = (r1 + r2 + c) / 2
+
+    # (EQUATION 26)
     lambda0 = (np.sqrt(r1 * r2) * np.cos(theta_C0 / 2)) / s0
 
+# STEP 3 OPTIONAL COMPUTE N MAX TYPE 1
 # Determining the Allowable Number of Revolutions using modified Newton's Iteration
 #   Defining iteration methods
     max_iterations = 100
@@ -129,31 +141,32 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
         x0 = 0
 
         # Calculating other values needed for the partial derivatives below
+        # EQUATIONS FROM APPENDIX
         sigma = 1 - x0**2
         y = np.sqrt(1 - lambda0**2 * (1 - x0**2))
         s = (r1 + r2) / (1 + lambda0**2)
-        B_M = -1.5 * E.Earth_J2 * E.Earth_Radius**2 * (1.5 * np.sin(incl**2) - 1)
-        zeta = (1 + B_M * a0**-2 * B_e**(-3/2) * 0.5 * np.sqrt(E.Earth_mu) * tau_0)
+        B_M = -1.5 * E.J2 * E.Radius**2 * (1.5 * np.sin(incl**2) - 1)
+        zeta = (1 + B_M * a0**-2 * B_e**(-3/2) * 0.5 * np.sqrt(E.mu) * tau_0)
         cos_psi = (x0 * y) + (lambda0 * (1 - x0**2))
         theta_ck = theta - (B_Omega * a0**(-7/2) * B_e**-2 * tau_0) + (2 * np.pi * K)
 
         # Calculating Auxiliary Function, W
-        W = lambda0 - (np.sqrt(r1 * r2))**-1 * np.cos(((theta_C0 - (omeegadot_J2 * tau_0)) / 2) + (np.pi * K))
+        W = lambda0 - (np.sqrt(r1 * r2))**-1 * np.cos(((theta_C0 - (omegadot_J2 * tau_0)) / 2) + (np.pi * K))
 
         # Calculating partial derivatives
         dLambda_F_dlambda = (sigma**-1 * y) - (lambda0**2 * y**-1) - (6 * np.sqrt(2) * s**(-3/2) * lambda0 * (1 +  lambda0**2)**-1 * zeta)
         dLambda_upsilon_dlambda = -np.pi**-1 * sigma**(3/2) * dLambda_F_dlambda
 
-        dLambda_F_da = (2 * np.sqrt(2 * E.Earth_mu) * B_M * a0**-3 * B_e**(-3/2) * s**(-3/2) * tau_0) + (7 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-9/2) * B_e**-2 * s(-3/2) * tau_0 * zeta)
+        dLambda_F_da = (2 * np.sqrt(2 * E.mu) * B_M * a0**-3 * B_e**(-3/2) * s**(-3/2) * tau_0) + (7 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-9/2) * B_e**-2 * s(-3/2) * tau_0 * zeta)
         dLambda_upsilon_da = -np.pi**-1 * sigma**(3/2) * dLambda_F_da
 
         da_dlambda = -2 * a0 * lambda0 * (1 + lambda0**2)**-1
 
-        dLambda_F_dB_e = (1.5 * np.sqrt(2 * E.Earth_mu) * B_M * a0**(-2) * B_e**(5/2) * s**(-3/2) * tau_0) + (4 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-7/2) * B_e**-3 * s**(-3/2) * tau_0 * zeta)
+        dLambda_F_dB_e = (1.5 * np.sqrt(2 * E.mu) * B_M * a0**(-2) * B_e**(5/2) * s**(-3/2) * tau_0) + (4 * np.sqrt(2) * B_Omega * delta_l**-1 * a0**(-7/2) * B_e**-3 * s**(-3/2) * tau_0 * zeta)
         dLambda_Upsilon_dB_e = -np.pi**-1 * sigma**(3/2) * dLambda_F_dB_e
 
         dB_e_dlambda = (-8 * sigma * ((s**2 * lambda0**5 * sigma) + (lambda0**3 * ((s**2 * y**2) -
-                    (sigma * ((r1 * r2) - s**2)))) + (lambda0 * (y**2 * (s**2 - (2 * r1 * r2)) - ((r1 * r2 * sigma)))) -
+                    (sigma * ((r1 * r2) - s**2)))) + (lambda0 * (y**2 * (s**2 - (2 * r1 * r2)) - (r1 * r2 * sigma))) -
                     (r1 * r2 * x0 * y * (1 - lambda0**2)))) / (s**2 * (1 + lambda0**2) * (y - (lambda0 * x0))**3 * y)
 
         dLambda_Upsilon_dpsi = -np.pi**-1
@@ -195,18 +208,21 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     #   Damping Factor
         rho_Upislonx = 0.5
 
-     #  Equation 60
+     #  (EQUATION 60)
         lambdaplus1 = lambda0 - (rho_Upislonx * jacobian_inv_ident * dUpsilon_dx)
         xplus1 = x0 - (rho_Upislonx * jacobian_inv_ident * W)
 
-
+        # CHECKING VALUES TO DETERMINE WHEN SOLUTION HAS CONVERGED
         if abs(lambda0 - lambdaplus1) < tolerance and abs(x0 - xplus1) < tolerance:
+            # CONVERGED AUXILIARY QUANTITIES
             lambda_star = lambdaplus1
             x_star = xplus1
             break
+
         lambda0 = lambdaplus1
         x0 = xplus1
 
+    # CALCULATING N MAX TYPE 1
     # Calculating dUpsilon/dx using the lambda_star and x_star values that was found using iterations
     sigma_star = 1 - x_star**2
     y_star = np.sqrt(1 - lambda_star**2 * (1 - x_star **2))
@@ -214,26 +230,26 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     cos_psi = (x_star * y_star) + (lambda_star * (1 - x_star**2))
 
     # Calculating Auxiliary Function, W
-    W = lambda_star - (np.sqrt(r1 * r2)) ** -1 * np.cos(((theta_C0 - (omeegadot_J2 * tau_0)) / 2) + (np.pi * K))
+    W = lambda_star - (np.sqrt(r1 * r2)) ** -1 * np.cos(((theta_C0 - (omegadot_J2 * tau_0)) / 2) + (np.pi * K))
 
     # Calculating partial derivatives
     dLambda_F_dlambda_star = (sigma_star ** -1 * y_star) - (lambda_star ** 2 * y_star ** -1) - (6 * np.sqrt(2) * s_star ** (-3 / 2) * lambda_star * (1 + lambda_star ** 2) ** -1 * zeta)
     dLambda_upsilon_dlambda_star = -np.pi ** -1 * sigma_star ** (3 / 2) * dLambda_F_dlambda_star
 
-    dLambda_F_da_star = (2 * np.sqrt(2 * E.Earth_mu) * B_M * a0 ** -3 * B_e ** (-3 / 2) * s_star**(-3 / 2) * tau_0) + (
+    dLambda_F_da_star = (2 * np.sqrt(2 * E.mu) * B_M * a0 ** -3 * B_e ** (-3 / 2) * s_star**(-3 / 2) * tau_0) + (
             7 * np.sqrt(2) * B_Omega * delta_l ** -1 * a0 ** (-9 / 2) * B_e ** -2 * s_star(-3 / 2) * tau_0 * zeta)
 
     dLambda_upsilon_da_star = -np.pi ** -1 * sigma_star**(3 / 2) * dLambda_F_da_star
 
     da_dlambda_star = -2 * a0 * lambda_star * (1 + lambda_star**2) ** -1
 
-    dLambda_F_dB_e_star = (1.5 * np.sqrt(2 * E.Earth_mu) * B_M * a0 ** (-2) * B_e ** (5 / 2) * s_star*(-3 / 2) * tau_0) + (
+    dLambda_F_dB_e_star = (1.5 * np.sqrt(2 * E.mu) * B_M * a0 ** (-2) * B_e ** (5 / 2) * s_star*(-3 / 2) * tau_0) + (
             4 * np.sqrt(2) * B_Omega * delta_l ** -1 * a0 ** (-7 / 2) * B_e ** -3 * s_star**(-3 / 2) * tau_0 * zeta)
 
     dLambda_Upsilon_dB_e_star = -np.pi ** -1 * sigma_star ** (3 / 2) * dLambda_F_dB_e_star
 
     dB_e_dlambda_star = (-8 * sigma_star * ((s_star**2 * lambda_star ** 5 * sigma_star) + (lambda_star ** 3 * ((s_star** 2 * y_star ** 2) -
-                    (sigma_star * ((r1 * r2) - s_star** 2)))) + (lambda_star * (y_star** 2 * (s_star** 2 - (2 * r1 * r2)) - ((r1 * r2 * sigma_star)))) -
+                    (sigma_star * ((r1 * r2) - s_star** 2)))) + (lambda_star * (y_star** 2 * (s_star** 2 - (2 * r1 * r2)) - (r1 * r2 * sigma_star))) -
                     (r1 * r2 * x_star * y_star * (1 - lambda_star** 2)))) / (s_star**2 * (1 + lambda_star**2) * (y_star - (lambda_star * x_star))**3 * y_star)
 
     dLambda_Upsilon_dpsi_star = -np.pi ** -1
@@ -272,50 +288,62 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     # Max Number of Revolutions Type 1
     Nmaxtype1 = dUpsilon_dx_star
 
+# STEP 3 OPTIONAL N MAX TYPE 2 N MIN TYPE 2
+    # Saving Values to prevent more calculations
     r_min_exp = r_min**(-7 / 2)
     r_min_exp2 = r_min ** (-3 / 2)
     r_max_exp = r_max**(-7 / 2)
     r_max_exp2 = r_max ** (-3 / 2)
 
     #  Rate of Change of Right Ascension of the Ascending Node due to J2 Perturbation (Max and Min)
-    B_J2 = 1.5 * E.Earth_J2 * E.Earth_Radius**2 * np.sqrt(E.Earth_mu)
+    B_J2 = 1.5 * E.J2 * E.Radius**2 * np.sqrt(E.mu)
 
     #Determining whether desired inclination is within ranges
     value = DoubleRangeValue(incl, (0, np.asin(2 / 3) ** (1 / 2)), (np.pi - np.asin(2 / 3) ** (1 / 2), np.pi))
     value2 = withinrange(incl, np.asin(2 / 3) ** (1 / 2), np.pi - np.asin(2 / 3) ** (1 / 2))
 
+    # Depending on whether the Desired Inclination is whithin the UI and UII parameters determines whether equations
+    # 67 and 68 or 69 and 70
     if value.is_within_ranges() == True or value2.is_within_ranges() == True:
 
         psi = 1.5 * np.sin(incl ** 2 - 1)
-
+        # Case 1 Inc is within the range
         if incl in range(0, np.pi/2):
+            # Case 1 for [0, pi/2]
             omega_J2_min = -B_J2 * r_min_exp * np.cos(incl)
             omega_J2_max = -B_J2 * r_max_exp * np.cos(incl)
         else:
+            # Case 2 for [pi/2, pi]
             omega_J2_min = -B_J2 * r_max_exp * np.cos(incl)
             omega_J2_max = -B_J2 * r_min_exp * np.cos(incl)
 
         if value.is_within_ranges() == True:
-            nplusMJ2_min = (E.Earth_mu**(1/2) * r_max_exp2) - (B_J2 * r_max_exp * psi)
-            nplusMJ2_max = (E.Earth_mu**(1/2) * r_min_exp2) - (B_J2 * r_min_exp * psi)
+            #Case 1 if Inc in range of UI
+            nplusMJ2_min = (E.mu**(1/2) * r_max_exp2) - (B_J2 * r_max_exp * psi)
+            nplusMJ2_max = (E.mu**(1/2) * r_min_exp2) - (B_J2 * r_min_exp * psi)
 
         else:
-            nplusMJ2_min = (E.Earth_mu ** (1 / 2) * r_max_exp2) - (B_J2 * r_min_exp * psi)
-            nplusMJ2_max = (E.Earth_mu ** (1 / 2) * r_min_exp2) - (B_J2 * r_max_exp * psi)
+            #Case 2 if Inc in range of UII
+            nplusMJ2_min = (E.mu ** (1 / 2) * r_max_exp2) - (B_J2 * r_min_exp * psi)
+            nplusMJ2_max = (E.mu ** (1 / 2) * r_min_exp2) - (B_J2 * r_max_exp * psi)
 
     else:
+        # Case 2 Incl is not within range [EQUATIONS 69 AND 70]
         omega_J2_min = -B_J2 * r_min_exp
         omega_J2_max = -B_J2 * r_max_exp
-        nplusMJ2_min = (E.Earth_mu ** (1 / 2) * r_max_exp2) - (0.5 * B_J2 * r_min_exp)
-        nplusMJ2_max = (E.Earth_mu ** (1 / 2) * r_min_exp2) + (0.5 * B_J2 * r_max_exp)
+        nplusMJ2_min = (E.mu ** (1 / 2) * r_max_exp2) - (0.5 * B_J2 * r_min_exp)
+        nplusMJ2_max = (E.mu ** (1 / 2) * r_min_exp2) + (0.5 * B_J2 * r_max_exp)
 
-    Nmintype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_min / (E.Earth_angularvelocity - omega_J2_max))
-    Nmaxtype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_max / (E.Earth_angularvelocity - omega_J2_min))
+    # (EQUATION 71) CALCULATING N MINT TYPE 2 AND N MAX TYPE 2
+    Nmintype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_min / (E.angularvelocity - omega_J2_max))
+    Nmaxtype2 = (delta_l / (2 * np.pi)) * (nplusMJ2_max / (E.angularvelocity - omega_J2_min))
 
+    # (EQUATIONS 72 AND 73) DETERMINING REVOLUTION RANGE
     # Minimmum and Maximum Number of Revolutions
     Nmax = min(Nmaxtype1, Nmaxtype2)
     Nmin = Nmintype2
 
+# STEP 6 FOR LOOP TO RUN THROUGH THE RANGE OF REVOLUTIONS
     for i in range(Nmin, Nmax):
         if N == 0:
 

@@ -13,12 +13,12 @@ def HohmannTransfer(r_initial, r_final, mu):
     a_trans = (r_initial + r_final) / 2
 
     # Initial Velocity and Initial Velocity Transfer
-    v_int = np.sqrt(E.Earth_mu / r_initial)
-    v_transa = np.sqrt(((2 * E.Earth_mu) / r_initial) - (E.Earth_mu / a_trans))
+    v_int = np.sqrt(E.mu / r_initial)
+    v_transa = np.sqrt(((2 * E.mu) / r_initial) - (E.mu / a_trans))
 
     # Final Velcoity and Final Velocity Transfer
-    v_final = np.sqrt(E.Earth_mu / r_final)
-    v_transb = np.sqrt(((2 * E.Earth_mu) / r_final) - (E.Earth_mu / a_trans))
+    v_final = np.sqrt(E.mu / r_final)
+    v_transb = np.sqrt(((2 * E.mu) / r_final) - (E.mu / a_trans))
 
     # Delta V for Initial Manuever
     delta_va = v_transa - v_int
@@ -30,64 +30,59 @@ def HohmannTransfer(r_initial, r_final, mu):
     delta_v = abs(delta_va) + abs(delta_vb)
 
     # Transfer Time of Orbit
-    tau_trans = np.pi * np.sqrt(a_trans**3 / E.Earth_mu)
+    tau_trans = np.pi * np.sqrt(a_trans**3 / E.mu)
 
     return a_trans, tau_trans, delta_va, delta_vb
 
 
-# r_int = np.array([[6500], [0], [0]])
-# r_mag = np.linalg.norm(r_int)
-# v_mag =
-a = 6500
-ecc = 0
-incl = 0
-ascending_node = 0
-arg_perigee = 0
-true_anomaly = 0
-mu = E.Earth_mu
+def PlotHohmannTransfer(a, lambdatrue, r_new, mu):
+    r_vec_IJK, v_vec_IJK = COE2RV(a, 0, 0, 0, 0, 0, mu, "lambda_true", lambdatrue)
+    pos_sat = r_vec_IJK.tolist() + v_vec_IJK.tolist()
+    r_mag = np.linalg.norm(r_vec_IJK)
+    period_sat = 2 * np.pi * (np.sqrt(r_mag**3 / mu))
+    time_vec = np.linspace(0, period_sat, 1000)
+
+    pos_states, positions = OrbitProp(time_vec, pos_sat, mu)
+    print(positions)
+
+    a1, ecc1, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(pos_states[0, 0:3], pos_states[0, 3:6], mu)
+
+    # orbitplot(positions, 'satellite')
+
+    r_initial = r_mag
+    r_final = r_mag + r_new
+
+    a_trans, tau_trans, delta_va, delta_vb = HohmannTransfer(r_initial, r_final, mu)
+
+    pos_sat1 = pos_sat.copy()
+    pos_sat1[4] += delta_va
+    period_sat1 = 2 * np.pi * np.sqrt(a_trans**3 / mu)
+    time_vec1 = np.linspace(0, period_sat1, 1000)
+    pos_states1, positions1 = OrbitProp(time_vec1, pos_sat1, mu)
+
+    positions1_mag = np.linalg.norm(positions1, axis=1)
+    max_pos1 = np.argmax(positions1_mag)
+    positions1_transfer = positions1[0:max_pos1, :]
+
+    # Second Burn To Maintain Transfer Orbit
+    pos_state2 = pos_states1[max_pos1, :]
+    pos_state2[4] -= delta_vb
+    pos_state2_mag = np.linalg.norm(pos_state2[0:2, :])
+    period_sat2 = 2 * np.pi * (np.sqrt(pos_state2_mag**3 / mu))
+    time_vec2 = np.linspace(0, period_sat2, 1000)
+
+    pos_states2, positions2 = OrbitProp(time_vec2, pos_state2, mu)
 
 
-r_vec_IJK, v_vec_IJK = COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, "lambda_true", 0)
-pos_sat = r_vec_IJK.tolist() + v_vec_IJK.tolist()
-r_mag = np.linalg.norm(r_vec_IJK)
-period_sat = 2 * np.pi * (np.sqrt(r_mag**3 / mu))
-time_vec = np.linspace(0, period_sat, 1000)
+    orbitplot([positions, positions1_transfer, positions2], ['initial orbit', 'transfer', 'new orbit'])
 
-pos_states, positions = OrbitProp(time_vec, pos_sat, mu)
-print(positions)
-
-a1, ecc1, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(pos_states[0, 0:3], pos_states[0, 3:6], mu)
-
-# orbitplot(positions, 'satellite')
-
-r_initial = r_mag
-r_final = r_mag + 500
-
-a_trans, tau_trans, delta_va, delta_vb = HohmannTransfer(r_initial, r_final, mu)
-
-pos_sat1 = pos_sat.copy()
-pos_sat1[4] += delta_va
-period_sat1 = 2 * np.pi * np.sqrt(a_trans**3 / mu)
-time_vec1 = np.linspace(0, period_sat1, 1000)
-pos_states1, positions1 = OrbitProp(time_vec1, pos_sat1, mu)
-
-positions1_mag = np.linalg.norm(positions1, axis=1)
-max_pos1 = np.argmax(positions1_mag)
-positions1_transfer = positions1[0:max_pos1, :]
-
-# Second Burn To Maintain Transfer Orbit
-pos_state2 = pos_states1[max_pos1, :]
-pos_state2[4] -= delta_vb
-pos_state2_mag = np.linalg.norm(pos_state2[0:2, :])
-period_sat2 = 2 * np.pi * (np.sqrt(pos_state2_mag**3 / mu))
-time_vec2 = np.linspace(0, period_sat2, 1000)
-
-pos_states2, positions2 = OrbitProp(time_vec2, pos_state2, mu)
+    return orbitplot
 
 
-orbitplot([positions, positions1_transfer, positions2], ['initial orbit', 'transfer', 'new orbit'])
 
-a2, ecc2, incl, ascending_node, arg_perigee, true_anomaly, arg_perigee_true, arg_latitude, lambda_true = RV2COE(pos_states2[0, 0:3], pos_states2[0, 3:6], mu)
+# a = 6500
+# lambdatrue = 0
+# mu = E.mu
+# r_new = 5000
+# PlotHohmannTransfer(a, lambdatrue, r_new, mu)
 
-print(a2)
-print(ecc2)
