@@ -1,4 +1,3 @@
-import math
 import numpy as np
 
 #arccot finds the inverse cotangent

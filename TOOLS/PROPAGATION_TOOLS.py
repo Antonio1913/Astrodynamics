@@ -1,7 +1,5 @@
 import numpy as np
-
-from SOLN_TO_KEPLER.KEPLER import KEPLER
-
+import KEPLER_TOOLS
 
 # pos_states = initial position state
 # Sat_state = should be a list 1
@@ -17,7 +15,7 @@ def OrbitProp(time_vec, Sat_state, mu):
 
     for i in range(1, N):
         changetime = time_vec[i] - time_vec[i - 1]
-        r_vec_new, v_vec_new = KEPLER(Sat_states[-1][:3], Sat_states[-1][3:6], changetime, mu)
+        r_vec_new, v_vec_new = KEPLER_TOOLS.KEPLER(Sat_states[-1][:3], Sat_states[-1][3:6], changetime, mu)
         Sat_states.append(r_vec_new.tolist() + v_vec_new.tolist())
 
     # Extract position vectors for plotting

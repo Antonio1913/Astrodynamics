@@ -1,13 +1,11 @@
 
 
 import numpy as np
-from SOLN_TO_KEPLER.FIndC2C3 import findc2c3
 import spiceypy as spice
 from TOOLS.PLOTTING_TOOLS import orbitplot
 from SPICE.SPICE_TOOLS import load_kernels, ephemdata, tvlist2array
-from SOLN_TO_KEPLER.KEPLER import KEPLER
 import matplotlib.pyplot as plt
-
+import KEPLER_TOOLS as KT
 
 
 
@@ -54,7 +52,7 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
 
         psi_nplus1 = (psi_up + psi_low) / 2
 
-        c2, c3 = findc2c3(psi_nplus1)
+        c2, c3 = KT.findc2c3(psi_nplus1)
 
         psi_n = psi_nplus1
 
@@ -121,7 +119,7 @@ spacecraft_states = [spacecraft0]
 # Propagating Spacecrafts Orbit
 for i in range(1, len(time_vec)):
     changetime = time_vec[i] - time_vec[i-1]
-    r_vec_new, v_vec_new = KEPLER(spacecraft_states[-1][:3], spacecraft_states[-1][3:6], changetime, mu)
+    r_vec_new, v_vec_new = KT.KEPLER(spacecraft_states[-1][:3], spacecraft_states[-1][3:6], changetime, mu)
     spacecraft_states.append(r_vec_new.tolist() + v_vec_new.tolist())
 
 # Extract position vectors for plotting
