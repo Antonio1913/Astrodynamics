@@ -4,7 +4,9 @@ import numpy as np
 from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
 from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
 
-
+#Universly Defined Values
+tolerance = 1 * 10**-8    # The standard tolerance for Newton_Raphson Method
+max_iterations = 100     # Maximizes the number of iterations to 20
 
 # THIS FUNCTION CONVERTS THE KNOWN ANOMALY TO OUTPUT THE TRUE ANOMALY.
 # THE ORDER OF THE INPUTS IS VERY IMPORTANT
@@ -205,9 +207,6 @@ def kepEqtnE(M,ecc):
     else:
         En = M + ecc
 
-    tolerance = 1 * 10**-8    # The standard tolerance for Newton_Raphson Method
-    max_iterations = 100     # Maximizes the number of iterations to 20
-
     for i in range(max_iterations):
         Enplus1 = En + ((M - En + (ecc * np.sin(En)))/(1 - ecc * np.cos(En)))
         if abs(Enplus1 - En) < tolerance:
@@ -236,8 +235,6 @@ def kepeqtnH(M, e):
         else:
             Hn = M / (e - 1)
 
-    tolerance = 1 * 10 ** -8  # The standard tolerance for Newton_Raphson Method
-    max_iterations = 100  # Maximizes the number of iterations to 20
     for i in range(max_iterations):
         Hnplus1 = Hn + ((M - e * np.sinh(Hn) + Hn) / (e * np.cosh(Hn) - 1))
         if abs(Hnplus1 - Hn) < tolerance:
@@ -325,10 +322,6 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
     elif alpha < -0.000001:
         a = 1 / alpha
         chi_n = sign(delta_t) * np.sqrt(-a) * np.log((-2 * mu * alpha * delta_t) / (np.dot(r0_vec, v0_vec) + (sign(delta_t) * np.sqrt(-mu * a) * (1 - (r0_mag * alpha)))))
-
-#   Iteration settings
-    tolerance = 1 * 10**-6
-    max_iterations = 100
 
 #   Newton-Raphson iteration
     for i in range(max_iterations):
