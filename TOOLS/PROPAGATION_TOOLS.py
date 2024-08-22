@@ -30,12 +30,12 @@ def OrbitProp(time_vec, Sat_state, mu):
 #INPUT
 
 #   pos_sat                     - position vector of orbiting body [3xN]
-def sphericalharmonics(pos_sat, desired_degree, order, C, S):
+def sphericalharmonics(pos_sat, desired_degree, Harmonic_values):
 
     # Transforming inputted position into spherical coordinates
     pos_norm = np.linalg.norm(pos_sat)
-    sat_lambda = np.asin(pos_sat[:, 3] / pos_norm)
-    sat_phi = np.atan(pos_sat[:, 2], pos_sat[:, 1])
+    sat_phi = np.asin(pos_sat[:, 3] / pos_norm)
+    sat_lambda = np.atan2(pos_sat[:, 2], pos_sat[:, 1])
 
     # Calculating x value
     x = np.sin(sat_phi)
@@ -73,9 +73,7 @@ def sphericalharmonics(pos_sat, desired_degree, order, C, S):
         #Normalization
         Pbarlm = ((2 - deltam0) * ((2 * degrees) + 1) * ((sc.special.factorial(degrees - order)) / (sc.special.factorial(degrees + order))))**(1/2) * Plm
 
-        # Normalizing Geo potential Coefficients
-        cbar = (1 / ((2 - deltam0) * ((2 * degrees) + 1))) * ((sc.special.factorial(degrees + order)) / (sc.special.factorial(degrees - order)))**(1/2) * C
-        sbar = (1 / ((2 - deltam0) * ((2 * degrees) + 1))) * ((sc.special.factorial(degrees + order)) / (sc.special.factorial(degrees - order)))**(1/2) * S
+
 
         return a_vec
 

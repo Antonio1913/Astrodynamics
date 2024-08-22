@@ -22,7 +22,7 @@
 
 import numpy as np
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
-from SOLN_TO_KEPLER.COE2RV import COE2RV
+import KEPLER_TOOLS
 from TOOLS.FUNCTIONS import DoubleRangeValue, withinrange
 
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,
@@ -34,7 +34,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 
 # Step 1 Defining Omega, u, theta, delta_l, lambda_max
 #   Defining r1 using the initial Satellite Parameters
-    r1_vec, v1_vec = COE2RV (a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.mu, "none")
+    r1_vec, v1_vec = KEPLER_TOOLS.COE2RV(a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.mu, "none")
     r1 = np.linalg.norm(r1_vec)
 
 #   Argument of Latitude of the Spacecrafts Initial Orbit at T1
