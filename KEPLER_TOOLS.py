@@ -308,20 +308,20 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
     if alpha > 0.000001:
         chi_n = sqrtmu * delta_t * alpha
 
-#   parabolic
-    elif abs(alpha) < 0.000001:
-#   Calculating the vector and magnitude of the angular momentum
-        h_vec = np.linalg.cross(r0_vec, v0_vec)
-        h_mag = np.linalg.norm(h_vec)
-        p = h_mag**2 / mu # Semi-Minor Axis
-        s = arccot(3 * (np.sqrt(mu / p**3) * delta_t)) / 2
-        w = (np.atan(np.tan(s)**(1/3)))
-        chi_n = np.sqrt(p) * 2 * (1 / np.tan(2 * w))
-
 #   hyperbolic
     elif alpha < -0.000001:
         a = 1 / alpha
-        chi_n = sign(delta_t) * np.sqrt(-a) * np.log((-2 * mu * alpha * delta_t) / (np.dot(r0_vec, v0_vec) + (sign(delta_t) * np.sqrt(-mu * a) * (1 - (r0_mag * alpha)))))
+        chi_n = sign(delta_t) * np.sqrt(-a) * np.log((-2 * mu * alpha * delta_t) / (np.dot(r0_vec.T, v0_vec) + (sign(delta_t) * np.sqrt(-mu * a) * (1 - (r0_mag * alpha)))))
+
+    #   parabolic
+    else:
+        # Calculating the vector and magnitude of the angular momentum
+        h_vec = np.linalg.cross(r0_vec.T, v0_vec.T).T
+        h_mag = np.linalg.norm(h_vec)
+        p = h_mag ** 2 / mu  # Semi-Minor Axis
+        s = arccot(3 * (np.sqrt(mu / p ** 3) * delta_t)) / 2
+        w = (np.atan(np.tan(s) ** (1 / 3)))
+        chi_n = np.sqrt(p) * 2 * (1 / np.tan(2 * w))
 
 #   Newton-Raphson iteration
     for i in range(max_iterations):
