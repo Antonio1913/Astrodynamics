@@ -4,7 +4,7 @@ from TOOLS.PLOTTING_TOOLS import orbitplot
 from TOOLS.PROPAGATION_TOOLS import OrbitProp
 import numpy as np
 # Defining Unperturbed Orbit
-pos_sat, vel_sat = KT.COE2RV(1000, 0.99995, 35*(np.pi/180), 0, 0, 0, E.mu, "none")
+pos_sat, vel_sat = KT.COE2RV(1000, 0.1, 40*(np.pi/180), 0, 0, 0, E.mu, "none")
 
 state_sat = pos_sat.tolist() + vel_sat.tolist()
 pos_mag = np.linalg.norm(pos_sat.T)
@@ -16,7 +16,7 @@ print(pos_sat)
 orbitplot([positions], ['Satellite No-Perturbations'])
 
 
-
+HarmonicValues = np.loadtxt('D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
 
 
 
