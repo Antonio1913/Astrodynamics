@@ -108,33 +108,44 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
         # Creating Variable for Plm_plus1
         Plm_plus1scaling = Plm_scaling[1:, :]
         Plm_plus1 = Plm_bar[1:, :]
+
         # Corrected Plmplus1 by multiplying by lm normalization factor and divide by lm+1 normalization factor
         Plm_plus1corrected = Plm_plus1 * (Plm_scaling[0:-1,:] / Plm_plus1scaling)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudphi = (pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi *
+        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree, :])) * (C_calc + S_calc))
 
-
-
-
-
-
+        # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
+        dudlambda = np.sum((pos_ratio**Degree) * (Order * Plm_bar[0:Degree, :]) * (C_calc + S_calc))
 
         # Summation Calculations for All Degree and Order
         dudr_sum = dudr_sum + dudr
         dudphi_sum = dudphi_sum + dudphi
         dudlambda_sum = dudlambda_sum + dudlambda
 
-
-
-
-
-
-
     # Final Calculations for Equation (8-25)
     dUdR = (-mu / pos_norm**2) * dudr_sum
     dUdPhi = (mu / pos_norm) * dudphi_sum
     dUdLambda = (mu / pos_norm) * dudlambda_sum
 
-    return a_vec
+    # Spherical Coordinates to Cartesian
+    drdr = pos_sat / pos_norm
+    dphidr1 = -pos_sat * pos_sat[2, :] / pos_norm**2
+    dphidr1[2, :] = dphidr1[2, :] + 1
+    xysum = pos_sat[0:1, :]**2
+    dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
+    dlambdadr = np.zeros(np.size(dphidr))
+    dlambdadr[0, :] = -pos_sat[1, :]
+    dlambdadr[1, :] = pos_sat[0, :]
+    dlambdadr = dlambdadr / (np.sum(xysum))
+
+    # Acceleration components in te x, y, z directions
+    gx = dUdR * drdr
+    gy = dUdPhi * dphidr
+    gz = dUdLambda * dlambdadr
+
+    # Acceleration due to Spherical Harmonics
+    a_spherharm = [[gx], [gy], [gz]]
+
+    return a_spherharm
 
