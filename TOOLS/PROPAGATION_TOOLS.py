@@ -149,3 +149,15 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
 
     return a_spherharm
 
+# INPUT
+
+
+def orbitpert(twobody = True, spherharm = False, atmdrag = False, solrad = False, thirdbod = False):
+
+
+
+
+def rkutta4()
+
+
+
