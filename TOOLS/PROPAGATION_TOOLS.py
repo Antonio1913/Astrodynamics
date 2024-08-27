@@ -110,7 +110,7 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
         Plm_plus1 = Plm_bar[1:, :]
 
         # Corrected Plmplus1 by multiplying by lm normalization factor and divide by lm+1 normalization factor
-        Plm_plus1corrected = Plm_plus1 * (Plm_scaling[0:-1,:] / Plm_plus1scaling)
+        Plm_plus1corrected = Plm_plus1 * (Plm_scaling[0:-1, :] / Plm_plus1scaling)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
         dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree, :])) * (C_calc + S_calc))
