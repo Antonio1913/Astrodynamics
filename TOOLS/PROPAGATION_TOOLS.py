@@ -31,12 +31,16 @@ def OrbitProp(time_vec, Sat_state, mu):
 #INPUT
 
 #   pos_sat                     - [3xN]position vector of orbiting body
-def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bod = E.Radius):
+def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_bod = E.Radius):
+
+    # Extracting pos_sat and vel_sat from state_sat
+    pos_sat = state_sat[0:3, :]
+    vel_sat = state_sat[3:6, :]
 
     # Transforming inputted position into spherical coordinates
     pos_norm = np.linalg.norm(pos_sat)
-    sat_phi = np.asin(pos_sat[:, 3] / pos_norm)
-    sat_lambda = np.atan2(pos_sat[:, 2], pos_sat[:, 1])
+    sat_phi = np.asin(pos_sat[2, :] / pos_norm)
+    sat_lambda = np.atan2(pos_sat[1, :], pos_sat[0, :])
 
     # Ratio between Bodies Radius and position
     pos_ratio = -r_bod / pos_norm
@@ -53,7 +57,7 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
     dudlambda_sum = 0
 
     #Beginning for Loops to Calculate Recursions
-    for Degree in range(2, 1, desired_degree+1):
+    for Degree in range(2, desired_degree+1):
 
         # Order Array, [1xDegree+1]
         Order = np.arange(Degree + 2).reshape(-1, 1)
@@ -61,17 +65,17 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
         # Normalization
         # Pre-allocating delta variable with 0 and 1 values, [Degree + 2,1], (+2 to account for m =0 and m = l+1)
         deltam0 = np.zeros([Degree + 2, 1])
-        deltam0[1] = 1
+        deltam0[0] = 1
 
         # EQUATION 10, Normalization Scaling Factor for Plm
         Plm_scaling = ((2 - deltam0) * ((2 * Degree) + 1) * (sc.special.factorial(Degree - Order) / sc.special.factorial(Degree + Order))) ** (1/2)
 
         # Assigning C and S values from the Normalized Harmonic Values, [1, Degree+1]
-        values_beg = np.sum(np.array([2, Degree + 1]))
-        values_end = values_beg + Degree + 1
+        values_end = sum(range(3, Degree + 2))
+        values_beg = values_end - Degree
 
-        C = np.array(Harmonic_values[values_beg:values_end, 2]).reshape(-1, 1)
-        S = np.array(Harmonic_values[values_beg:values_end, 3]).reshape(-1, 1)
+        C = np.array(Harmonic_values[values_beg-1:values_end, 2]).reshape(-1, 1)
+        S = np.array(Harmonic_values[values_beg-1:values_end, 3]).reshape(-1, 1)
 
         # EQUATION 14 - Calculating Pl,l
         Pll = (sc.special.factorial((2 * Degree) - 1) / (2**(Degree - 1) * sc.special.factorial(Degree - 1))) * (xval**(Degree / 2))
@@ -97,12 +101,12 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
 
         # Equation (8-25) du/dr
         # Calculating last section for dudr Equation (8-25)
-        C_calc = C * np.cos(Order[0:Degree, :] * sat_lambda)
-        S_calc = S * np.sin(Order[0:Degree, :] * sat_lambda)
-        mtanphi = Order * np.tan(sat_phi)
+        C_calc = C * np.cos(Order[0:Degree+1, :] * sat_lambda)
+        S_calc = S * np.sin(Order[0:Degree+1, :] * sat_lambda)
+        mtanphi = Order[0:Degree+1] * np.tan(sat_phi)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudr = np.sum(pos_ratio**Degree * (Degree + 1) * Plm_bar[0:Degree, :] * (C_calc + S_calc))
+        dudr = np.sum(pos_ratio**Degree * (Degree + 1) * Plm_bar[0:Degree+1, :] * (C_calc + S_calc))
 
         # Equation (8-25) du/dphi
         # Creating Variable for Plm_plus1
@@ -113,10 +117,10 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
         Plm_plus1corrected = Plm_plus1 * (Plm_scaling[0:-1, :] / Plm_plus1scaling)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree, :])) * (C_calc + S_calc))
+        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree+1, :])) * (C_calc + S_calc))
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudlambda = np.sum((pos_ratio**Degree) * (Order * Plm_bar[0:Degree, :]) * (C_calc + S_calc))
+        dudlambda = np.sum((pos_ratio**Degree) * (Order[0:Degree+1] * Plm_bar[0:Degree+1, :]) * (C_calc + S_calc))
 
         # Summation Calculations for All Degree and Order
         dudr_sum = dudr_sum + dudr
@@ -133,6 +137,7 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
     dphidr1 = -pos_sat * pos_sat[2, :] / pos_norm**2
     dphidr1[2, :] = dphidr1[2, :] + 1
     xysum = pos_sat[0:1, :]**2
+    
     dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
     dlambdadr = np.zeros(np.size(dphidr))
     dlambdadr[0, :] = -pos_sat[1, :]
@@ -145,19 +150,38 @@ def sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu = E.mu, r_bo
     gz = dUdLambda * dlambdadr
 
     # Acceleration due to Spherical Harmonics
-    a_spherharm = [[gx], [gy], [gz]]
+    a_spherharm = np.array([[gx], [gy], [gz]])
 
-    return a_spherharm
+    # Velocity and Acceleration State
+    accel_state = vel_sat.tolist() + a_spherharm.tolist()
+
+    return accel_state
 
 # INPUT
 
 
-def orbitpert(twobody = True, spherharm = False, atmdrag = False, solrad = False, thirdbod = False):
+# def pert_spherharm(state_sat, mu = E.mu,twobody = True, spherharm = False)
+#
+#     # Defining Position of the Satellite from the State Array
+#     pos_sat = state_sat[0:3]
+#     pos_satnorm = np.linalg.norm(pos_sat)
+#     a_twobody = -mu * pos_sat / pos_satnorm**3
+#
+#     if spherharm:
+#         a_spherharm = sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
 
 
+def rkutta4(f, t, y, h):
 
+    # Calculate one Runge-Kutta4 step
+    k1 = f(t, y)
+    k2 = f(t + 0.5 * h, y + 0.5 * k1 * h)
+    k3 = f(t + 0.5 * h, y + 0.5 * k2 * h)
+    k4 = f(t + h, y + k3 * h)
 
-def rkutta4()
+    sol = y + h / 6 * (k2 + 2 * k2 + 2 * k3 + k4)
+
+    return sol
 
 
 

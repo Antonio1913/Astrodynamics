@@ -50,48 +50,6 @@ def withinrange(value, start, end):
     return start <= value <= end
 
 
-#INPUTS
-# x                     - [1XN] function of
-# desired_degree        - [1X1]desired_degree
-
-# Pbar_lm               - Normalized Associated Legendre Function
-def LegendreFunction(x, desired_degree, HarmonicValues):
-
-    # Saving x calculation
-    xval = 1 - (x**2)
-
-    # Pre-Allocating Arrays for Normalized Plm
-    Pbarlm = np.zeros([desired_degree + 2, desired_degree-1])
-
-    #Beginning for Loops to Calculate Recursions
-    for degrees in range(2, 1, desired_degree+1):
-
-        # Degree correction to store values in correct column
-        store = degrees - 2
-
-        # Calculating Pl,l (degrees - 2 stores values into first column, -2 stores value into second to last column)
-        Plm[-2, store] = (sc.special.factorial((2 * degrees) - 1) / (2**(degrees - 1) * sc.special.factorial(degrees - 1))) * (xval**(degrees / 2))
-
-        # Calculating Pl,l-1 (degrees - 2 stores values into first column, -3 stores value into third to last column
-        Plm[-3, store] = (x / xval**(1/2)) * Plm[degrees, -1]
-
-        # Normalization
-        # Pre-allocating delta variable with 0 and 1 values
-        deltam0 = np.zeros([degrees, 1])
-        deltam0[1] = 1
-
-        # (degrees - 2 starts for loop at Pl,l-2 since Pl,l and Pl,l-1 have already been calculated)
-        for order in range(degrees - 2, -1, -1):
-            calc1 = 1 / ((degrees - order) * (degrees + order + 1))
-            # Calculating Pl,m
-            Plm[order, store] = calc1 * (((2 * (order + 1)) * (x / xval**(1/2)) * Plm[order+1, store]) - Plm[order+2, store])
-
-        orders = np.arange(degrees+1)
-
-        #Normalization
-        Pbarlm = ((2 - deltam0) * ((2 * degrees) + 1) * ((sc.special.factorial(degrees - order)) / (sc.special.factorial(degrees + order))))**(1/2) * Plm
-
-
 
 
 
