@@ -302,7 +302,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
     value = DoubleRangeValue(incl, (0, np.asin(2 / 3) ** (1 / 2)), (np.pi - np.asin(2 / 3) ** (1 / 2), np.pi))
     value2 = withinrange(incl, np.asin(2 / 3) ** (1 / 2), np.pi - np.asin(2 / 3) ** (1 / 2))
 
-    # Depending on whether the Desired Inclination is whithin the UI and UII parameters determines whether equations
+    # Depending on whether the Desired Inclination is within the UI and UII parameters determines whether equations
     # 67 and 68 or 69 and 70
     if value.is_within_ranges() == True or value2.is_within_ranges() == True:
 

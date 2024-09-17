@@ -81,14 +81,14 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_
         Pll = (sc.special.factorial((2 * Degree) - 1) / (2**(Degree - 1) * sc.special.factorial(Degree - 1))) * (xval**(Degree / 2))
 
         # Calculating Pl,l-1 (degrees - 2 stores values into first column, -3 stores value into third to last column
-        Pllplus1 = xval2 * Pll
+        Pllminus1 = xval2 * Pll
 
         # Pre_Allocating Array for all Order values for the Degree accounting for all position in trajectory.
         Plm_bar = np.zeros([Degree + 2, size_x])
 
         # Assigning Pll and Pllplus1 into Plm_bar
-        Plm_bar[-1, :] = Plm_scaling[-1, :] * Pllplus1
-        Plm_bar[-2, :] = Plm_scaling[-2, :] * Pll
+        Plm_bar[-3, :] = Plm_scaling[-3, :] * Pll
+        Plm_bar[-2, :] = Plm_scaling[-2, :] * Pllminus1
 
         # Calculating sections of Equation 17 to make more readable
         calc1 = (Degree + Order + 1) * (Degree - Order)
@@ -97,7 +97,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_
 
         # For Loop Calculates the remaining order values
         for order in range(Degree - 2, -1, -1):
-            Plm_bar[order, :] = (calc2[order, :] * Plm_bar[order + 1, :]) - (calc3[order+2, :] * Plm_bar[order + 2, :])
+            Plm_bar[order, :] = (calc2[order, :] * Plm_bar[order + 1, :]) - (calc3[order, :] * Plm_bar[order + 2, :])
 
         # Equation (8-25) du/dr
         # Calculating last section for dudr Equation (8-25)
@@ -115,6 +115,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_
 
         # Corrected Plmplus1 by multiplying by lm normalization factor and divide by lm+1 normalization factor
         Plm_plus1corrected = Plm_plus1 * (Plm_scaling[0:-1, :] / Plm_plus1scaling)
+        Plm_plus1corrected[-1, :] = 0
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
         dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree+1, :])) * (C_calc + S_calc))
@@ -137,17 +138,16 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_
     dphidr1 = -pos_sat * pos_sat[2, :] / pos_norm**2
     dphidr1[2, :] = dphidr1[2, :] + 1
     xysum = pos_sat[0:1, :]**2
-    
     dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
-    dlambdadr = np.zeros(np.size(dphidr))
+    dlambdadr = np.zeros(dphidr.shape)
     dlambdadr[0, :] = -pos_sat[1, :]
     dlambdadr[1, :] = pos_sat[0, :]
     dlambdadr = dlambdadr / (np.sum(xysum))
 
     # Acceleration components in te x, y, z directions
-    gx = dUdR * drdr
-    gy = dUdPhi * dphidr
-    gz = dUdLambda * dlambdadr
+    gx = np.linalg.norm(dUdR * drdr)
+    gy = np.linalg.norm(dUdPhi * dphidr)
+    gz = np.linalg.norm(dUdLambda * dlambdadr)
 
     # Acceleration due to Spherical Harmonics
     a_spherharm = np.array([[gx], [gy], [gz]])
@@ -156,19 +156,6 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_
     accel_state = vel_sat.tolist() + a_spherharm.tolist()
 
     return accel_state
-
-# INPUT
-
-
-# def pert_spherharm(state_sat, mu = E.mu,twobody = True, spherharm = False)
-#
-#     # Defining Position of the Satellite from the State Array
-#     pos_sat = state_sat[0:3]
-#     pos_satnorm = np.linalg.norm(pos_sat)
-#     a_twobody = -mu * pos_sat / pos_satnorm**3
-#
-#     if spherharm:
-#         a_spherharm = sphericalharmonics(pos_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
 
 
 def rkutta4(f, t, y, h):
