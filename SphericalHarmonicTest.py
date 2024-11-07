@@ -21,15 +21,16 @@ print(pos_sat)
 state_sat = np.zeros((6, num_time_int))
 state_sat[:, 0] = np.array(state_sat_init).flatten()
 
-HarmonicValues = np.loadtxt('D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
 
-def f_sphericalharmonics(y, 5, HarmonicValues):
-    return sphericalharmonics(t, y, HarmonicValues)
+# HarmonicValues = np.loadtxt('D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
+
+# def f_sphericalharmonics(y, 5, HarmonicValues):
+#     return sphericalharmonics(t, y, HarmonicValues)
 
 
-for step in range(num_time_int - 1):
-    # state_sat[step + 1] = rkutta4(sphericalharmonics(state_sat[:, step].reshape(6, 1), 5, HarmonicValues), time_vec[step], state_sat[:, step].reshape(6, 1), dt)
-
-    state_sat[step + 1] = rkutta4(f_sphericalharmonics, time_vec[step], state_sat[:, step].reshape(6, 1), dt)
-
+# for step in range(num_time_int - 1):
+#     # state_sat[step + 1] = rkutta4(sphericalharmonics(state_sat[:, step].reshape(6, 1), 5, HarmonicValues), time_vec[step], state_sat[:, step].reshape(6, 1), dt)
+#
+#     state_sat[step + 1] = rkutta4(f_sphericalharmonics, time_vec[step], state_sat[:, step].reshape(6, 1), dt)
+#
 
