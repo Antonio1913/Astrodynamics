@@ -1,7 +1,8 @@
 import numpy as np
 import KEPLER_TOOLS
 import scipy as sc
-from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
+from MEAN_PLANETARY_CONSTANTS import Earth as E
+
 
 # pos_states = initial position state
 # Sat_state = should be a list 1
@@ -31,7 +32,7 @@ def OrbitProp(time_vec, Sat_state, mu):
 #INPUT
 
 #   pos_sat                     - [3xN]position vector of orbiting body
-def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu = E.mu, r_bod = E.Radius):
+def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
 
     # Extracting pos_sat and vel_sat from state_sat
     pos_sat = state_sat[0:3, :]
@@ -169,6 +170,3 @@ def rkutta4(f, t, y, h):
     sol = y + h / 6 * (k2 + 2 * k2 + 2 * k3 + k4)
 
     return sol
-
-
-

@@ -22,7 +22,15 @@ state_sat = np.zeros((6, num_time_int))
 state_sat[:, 0] = np.array(state_sat_init).flatten()
 
 
-# HarmonicValues = np.loadtxt('D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
+HarmonicValues = np.loadtxt(r'D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
+
+
+
+
+
+
+
+
 
 # def f_sphericalharmonics(y, 5, HarmonicValues):
 #     return sphericalharmonics(t, y, HarmonicValues)
