@@ -1,11 +1,12 @@
 # THIS FILE STORES THE CODE THAT PROVIDES THE BASE TO PROPAGATE ORBITS.
-
+from typing import Tuple
+from numpy.typing import NDArray
 import numpy as np
 from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
 from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
 
 #Universly Defined Values
-tolerance = 1 * 10**-8    # The standard tolerance for Newton_Raphson Method
+tolerance = 1 * 10**-12    # The standard tolerance for Newton_Raphson Method
 max_iterations = 100     # Maximizes the number of iterations to 20
 
 
@@ -56,45 +57,52 @@ def anomaly2nu(ecc, anomaly_type, *arg):
 
 ################################################################################################
 # INPUTS
-#   p                   - Semi-Parameter, km
-#   ecc                 - Eccentricity
-#   incl                - Inclination, rad
-#   ascending_node      - Ascending Node, rad
-#   arg_perigee         - Argument of Perigee, rad
-#   true_anomaly        - True Anomaly, rad
-#   mu                  - Gravitational Constant, km^3/s^2
+#   a (float)                  - Semi-major axis, km
+#   ecc (float)                - Eccentricity
+#   incl (float)               - Inclination, rad
+#   ascending_node (float)     - Ascending Node, rad
+#   arg_perigee (float)        - Argument of Perigee, rad
+#   true_anomaly (float)       - True Anomaly, rad
+#   mu (float)                 - Gravitational Constant, km^3/s^2
 #   *args
-#   lambda_true         - Lambda True (Circular Equatorial Orbit)
-#   arg_latitude        - Argument of Latitude (Circular Inclined Orbit)
-#   arg_perigee_true    - True Argument of Perigee (Equatorial Elliptical Orbit)
+#   lambda_true (float)        - Lambda True (Circular Equatorial Orbit)
+#   arg_latitude (float)       - Argument of Latitude (Circular Inclined Orbit)
+#   arg_perigee_true (float)   - True Argument of Perigee (Equatorial Elliptical Orbit)
+#   none (str)                 - Orbit Is Not a Special Case
 
 # OUTPUTS
 #   r_vec       - position vector at the observation time, km
 #   v_vec       - velocity at new position, km/s
 
-def COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):
+def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee: float, true_anomaly: float, mu: float,
+           *args) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
+
     if len(args) > 2:
         raise ValueError(f"Too many inputs, ensure the only args inputted correspond to the type of orbit")
 
         #Setting Conditional Terms
         # Circular and Equatorial
-    if args[0] == "lambda_true" and ecc == 0 and incl == 0:
+    if abs(ecc) < 1e-8 and abs(incl) < 1e-8:
+        # args[0] == "lambda_true"
         arg_perigee = 0
         ascending_node = 0
-        lambda_true = args[1]
+        lambda_true = args[0]
         true_anomaly = lambda_true
 
 #       Circular and Inclined
-    elif args[0] == "arg_latitude" and ecc == 0 and incl < 0:
+    elif abs(ecc) < 1e-8 and incl > 0:
+        # args[0] == "arg_latitude"
         arg_perigee = 0
-        arg_latitude = args[1]
+        arg_latitude = args[0]
         true_anomaly = arg_latitude
 
 #       Elliptical  and Equatorial
-    elif args[0] == "arg_perigee_true" and ecc < 0 and incl == 0:
+    elif ecc < 0 and abs(incl) < 1e-8:
+        # args[0] == "arg_perigee_true"
         ascending_node = 0
-        arg_perigee_true = args[1]
+        arg_perigee_true = args[0]
         arg_perigee = arg_perigee_true
+
     elif args[0] == "none":
         pass
 
@@ -102,22 +110,22 @@ def COE2RV(a, ecc, incl, ascending_node, arg_perigee, true_anomaly, mu, *args):
         raise ValueError(f"Unexpected value for args {args}")
 
 #   Vector array of the position of the body in the PQW axis
-    r_PQW = np.array([[(a * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly)))],
-                      [(a * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly)))],
-                      [0]])
+    r_PQW = np.array([(a * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly))),
+                      (a * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly))),
+                      0])
 
-    v_PQW = np.array([[-np.sqrt(mu / a) * np.sin(true_anomaly)],
-                      [np.sqrt(mu / a) * (ecc + np.cos(true_anomaly))],
-                      [0]])
+    v_PQW = np.array([-np.sqrt(mu / a) * np.sin(true_anomaly),
+                      np.sqrt(mu / a) * (ecc + np.cos(true_anomaly)),
+                      0])
 
 #   Rotation operation in order to get the vectors in the geocentric equatorial system
     Rotations = np.dot(Rot3(-ascending_node), np.dot(Rot1(-incl), Rot3(-arg_perigee)))
 
 #   Position vector in the IJK reference frame
-    r_vec_IJK = np.dot(Rotations, r_PQW)
+    r_vec_IJK = np.dot(Rotations, r_PQW.reshape(3, 1))
 
 #   Velocity vector in the IJK reference frame
-    v_vec_IJK = np.dot(Rotations, v_PQW)
+    v_vec_IJK = np.dot(Rotations, v_PQW.reshape(3, 1))
 
     return r_vec_IJK, v_vec_IJK
 

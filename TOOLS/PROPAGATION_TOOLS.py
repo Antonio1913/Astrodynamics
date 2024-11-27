@@ -1,5 +1,5 @@
 import numpy as np
-import KEPLER_TOOLS
+import KEPLER_TOOLS as KP
 import scipy as sc
 from MEAN_PLANETARY_CONSTANTS import Earth as E
 
@@ -18,8 +18,8 @@ def OrbitProp(time_vec, Sat_state, mu):
 
     for i in range(1, N):
         changetime = time_vec[i] - time_vec[i - 1]
-        r_vec_new, v_vec_new = KEPLER_TOOLS.KEPLER(Sat_states[-1][:3], Sat_states[-1][3:6], changetime, mu)
-        Sat_states.append(r_vec_new.tolist() + v_vec_new.tolist())
+        r_vec_new, v_vec_new = KP.KEPLER(Sat_states[-1][:3], Sat_states[-1][3:6], changetime, mu)
+        Sat_states.append(r_vec_new.flatten().tolist() + v_vec_new.flatten().tolist())
 
     # Extract position vectors for plotting
     Sat_states = np.array(Sat_states)
