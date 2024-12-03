@@ -1,9 +1,11 @@
 # THIS FILE STORES THE CODE THAT PROVIDES THE BASE TO PROPAGATE ORBITS.
 from typing import Tuple
+from MEAN_PLANETARY_CONSTANTS import Earth as E
 from numpy.typing import NDArray
 import numpy as np
 from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
 from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
+
 
 #Universly Defined Values
 tolerance = 1 * 10**-12    # The standard tolerance for Newton_Raphson Method
@@ -57,7 +59,7 @@ def anomaly2nu(ecc, anomaly_type, *arg):
 
 ################################################################################################
 # INPUTS
-#   a (float)                  - Semi-major axis, km
+#   p (float)                  - Semi-minor axis, km
 #   ecc (float)                - Eccentricity
 #   incl (float)               - Inclination, rad
 #   ascending_node (float)     - Ascending Node, rad
@@ -74,7 +76,7 @@ def anomaly2nu(ecc, anomaly_type, *arg):
 #   r_vec       - position vector at the observation time, km
 #   v_vec       - velocity at new position, km/s
 
-def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee: float, true_anomaly: float, mu: float,
+def COE2RV(p: float, ecc: float, incl: float, ascending_node: float, arg_perigee: float, true_anomaly: float, mu: float,
            *args) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
 
     if len(args) > 2:
@@ -82,7 +84,7 @@ def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee
 
         #Setting Conditional Terms
         # Circular and Equatorial
-    if abs(ecc) < 1e-8 and abs(incl) < 1e-8:
+    if abs(ecc) < tolerance and abs(incl) < tolerance:
         # args[0] == "lambda_true"
         arg_perigee = 0
         ascending_node = 0
@@ -90,14 +92,14 @@ def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee
         true_anomaly = lambda_true
 
 #       Circular and Inclined
-    elif abs(ecc) < 1e-8 and incl > 0:
+    elif abs(ecc) < tolerance and incl > 0:
         # args[0] == "arg_latitude"
         arg_perigee = 0
         arg_latitude = args[0]
         true_anomaly = arg_latitude
 
 #       Elliptical  and Equatorial
-    elif ecc < 0 and abs(incl) < 1e-8:
+    elif ecc > tolerance > abs(incl):
         # args[0] == "arg_perigee_true"
         ascending_node = 0
         arg_perigee_true = args[0]
@@ -110,12 +112,12 @@ def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee
         raise ValueError(f"Unexpected value for args {args}")
 
 #   Vector array of the position of the body in the PQW axis
-    r_PQW = np.array([(a * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly))),
-                      (a * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly))),
+    r_PQW = np.array([(p * (np.cos(true_anomaly))) / (1 + (ecc * np.cos(true_anomaly))),
+                      (p * np.sin(true_anomaly)) / (1 + (ecc * np.cos(true_anomaly))),
                       0])
 
-    v_PQW = np.array([-np.sqrt(mu / a) * np.sin(true_anomaly),
-                      np.sqrt(mu / a) * (ecc + np.cos(true_anomaly)),
+    v_PQW = np.array([-np.sqrt(mu / p) * np.sin(true_anomaly),
+                      np.sqrt(mu / p) * (ecc + np.cos(true_anomaly)),
                       0])
 
 #   Rotation operation in order to get the vectors in the geocentric equatorial system
@@ -127,7 +129,7 @@ def COE2RV(a: float, ecc: float, incl: float, ascending_node: float, arg_perigee
 #   Velocity vector in the IJK reference frame
     v_vec_IJK = np.dot(Rotations, v_PQW.reshape(3, 1))
 
-    return r_vec_IJK, v_vec_IJK
+    return np.squeeze(r_vec_IJK), np.squeeze(v_vec_IJK)  # np.array(3,)
 
 ################################################################################################
 # This function solves C2(Chi) and C3(Chi) functions. These values are used to plug into the Kepler equations in terms of
@@ -475,7 +477,7 @@ def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
 #   arg_perigee_true    - True Argument of Perigee (Equatorial Elliptical Orbit)
 
 
-def RV2COE(r_ijk, v_ijk, mu):
+def RV2COE(r_ijk, v_ijk, mu=E.mu):
 
     # Ensure inputs are 2D arrays
     r_ijk = np.asarray(r_ijk)  # Shape: (n, 3)
@@ -483,7 +485,7 @@ def RV2COE(r_ijk, v_ijk, mu):
 
     # Angular Momentum
     h_vec = np.cross(r_ijk.T, v_ijk.T).T  # km^2/s
-    # h_mag = np.linalg.norm(h_vec)  # km^2/s
+    h_mag = np.linalg.norm(h_vec)  # km^2/s
 
     # Node Vector
     k_vec = np.array([[0, 0, 1]])

@@ -1,4 +1,6 @@
 import numpy as np
+from typing import Tuple
+from numpy.typing import NDArray
 import KEPLER_TOOLS as KP
 import scipy as sc
 from MEAN_PLANETARY_CONSTANTS import Earth as E
@@ -6,24 +8,27 @@ from MEAN_PLANETARY_CONSTANTS import Earth as E
 
 # pos_states = initial position state
 # Sat_state = should be a list 1
-def OrbitProp(time_vec, Sat_state, mu):
+def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]], mu: 'float'= E.mu) \
+        -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
 
     if np.size(Sat_state) < 5:
         np.transpose(Sat_state)
 
-    #Designated size of time_vec as a variable
+    # Designated size of time_vec as a variable
     N = len(time_vec)
+    dt = time_vec[1] - time_vec[0]
 
-    Sat_states = [Sat_state]
+    # Pre Allocating size of Sat_states
+    Sat_states = np.zeros((6, N))
+    Sat_states[:, 0] = Sat_state
 
     for i in range(1, N):
-        changetime = time_vec[i] - time_vec[i - 1]
-        r_vec_new, v_vec_new = KP.KEPLER(Sat_states[-1][:3], Sat_states[-1][3:6], changetime, mu)
-        Sat_states.append(r_vec_new.flatten().tolist() + v_vec_new.flatten().tolist())
+        r_vec_new, v_vec_new = KP.KEPLER(Sat_states[:3, i-1], Sat_states[3:, i-1], dt, mu)
+        Sat_states[:, i] = np.concatenate((r_vec_new, v_vec_new))
 
     # Extract position vectors for plotting
-    Sat_states = np.array(Sat_states)
-    pos_sat = Sat_states[:, :3]
+    # Sat_states = np.array(Sat_states)
+    pos_sat = Sat_states[:3, :]
     return Sat_states, pos_sat
 
 
@@ -157,6 +162,15 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     accel_state = vel_sat.tolist() + a_spherharm.tolist()
 
     return accel_state
+
+
+def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float'= E.mu, num_orbit =1) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
+    state_sat_init = np.concatenate((pos_sat, vel_sat)) # np.array(6,)
+    period_sat = 2 * np.pi * (np.sqrt(a**3 / mu))
+    num_time_int = 1000
+    time_vec = np.linspace(0, period_sat * num_orbit, num_time_int)
+    states, positions = OrbitProp(time_vec, state_sat_init, mu)
+    return states, positions
 
 
 def rkutta4(f, t, y, h):
