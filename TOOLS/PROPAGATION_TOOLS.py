@@ -21,10 +21,12 @@ def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]],
     # Pre Allocating size of Sat_states
     Sat_states = np.zeros((6, N))
     Sat_states[:, 0] = Sat_state
+    dt_counter = 0
 
     for i in range(1, N):
         r_vec_new, v_vec_new = KP.KEPLER(Sat_states[:3, i-1], Sat_states[3:, i-1], dt, mu)
         Sat_states[:, i] = np.concatenate((r_vec_new, v_vec_new))
+        dt_counter = dt_counter + dt
 
     # Extract position vectors for plotting
     # Sat_states = np.array(Sat_states)

@@ -79,7 +79,7 @@ def anomaly2nu(ecc, anomaly_type, *arg):
 def COE2RV(p: float, ecc: float, incl: float, ascending_node: float, arg_perigee: float, true_anomaly: float, mu: float,
            *args) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
 
-    if len(args) > 2:
+    if len(args) > 1:
         raise ValueError(f"Too many inputs, ensure the only args inputted correspond to the type of orbit")
 
         #Setting Conditional Terms
@@ -576,3 +576,6 @@ def nutoAnomaly(e, nu):
         #H1 = np.asinh((np.sin(nu) * np.sqrt(e**2 - 1)) / (1 + (e * np.cos(nu))))
         H = np.acosh((e + np.cos(nu)) / (1 + (e * np.cos(nu))))
         return H
+
+
+
