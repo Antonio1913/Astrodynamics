@@ -1,6 +1,6 @@
 import numpy as np
 from MEAN_PLANETARY_CONSTANTS import Earth as E
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from TOOLS.PROPAGATION_TOOLS import sphericalharmonics
 # from mpl_toolkits.mplot3d import Axes3D
 
