@@ -42,13 +42,13 @@ def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]],
 def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
 
     # Extracting pos_sat and vel_sat from state_sat
-    pos_sat = state_sat[0:3, :]
-    vel_sat = state_sat[3:6, :]
+    pos_sat = state_sat[:, :3]
+    vel_sat = state_sat[:, :3]
 
     # Transforming inputted position into spherical coordinates
-    pos_norm = np.linalg.norm(pos_sat)
-    sat_phi = np.asin(pos_sat[2, :] / pos_norm)
-    sat_lambda = np.atan2(pos_sat[1, :], pos_sat[0, :])
+    pos_norm = np.linalg.norm(pos_sat,axis=1)
+    sat_phi = np.asin(pos_sat[:, 2] / pos_norm)
+    sat_lambda = np.atan2(pos_sat[:, 1], pos_sat[:, 0])
 
     # Ratio between Bodies Radius and position
     pos_ratio = -r_bod / pos_norm
@@ -60,7 +60,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     size_x = np.size(x)
 
     # Pre-Allocating Summation Arrays
-    dudr_sum = 0
+    dudr_sum = 1
     dudphi_sum = 0
     dudlambda_sum = 0
 
@@ -114,7 +114,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         mtanphi = Order[0:Degree+1] * np.tan(sat_phi)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudr = np.sum(pos_ratio**Degree * (Degree + 1) * Plm_bar[0:Degree+1, :] * (C_calc + S_calc))
+        dudr = np.sum(pos_ratio**Degree * (Degree + 1) * Plm_bar[0:Degree+1, :] * (C_calc + S_calc), axis=0)
 
         # Equation (8-25) du/dphi
         # Creating Variable for Plm_plus1
@@ -126,10 +126,10 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         Plm_plus1corrected[-1, :] = 0
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree+1, :])) * (C_calc + S_calc))
+        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree+1, :])) * (C_calc + S_calc), axis=0)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudlambda = np.sum((pos_ratio**Degree) * (Order[0:Degree+1] * Plm_bar[0:Degree+1, :]) * (C_calc + S_calc))
+        dudlambda = np.sum((pos_ratio**Degree) * (Order[0:Degree+1] * Plm_bar[0:Degree+1, :]) * (C_calc + S_calc), axis=0)
 
         # Summation Calculations for All Degree and Order
         dudr_sum = dudr_sum + dudr
@@ -142,28 +142,29 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     dUdLambda = (mu / pos_norm) * dudlambda_sum
 
     # Spherical Coordinates to Cartesian
+    pos_norm = np.reshape(pos_norm, (np.size(pos_norm, axis=0),1))
     drdr = pos_sat / pos_norm
-    dphidr1 = -pos_sat * pos_sat[2, :] / pos_norm**2
-    dphidr1[2, :] = dphidr1[2, :] + 1
-    xysum = pos_sat[0:1, :]**2
+    dphidr1 = -pos_sat * pos_sat[:, 2].reshape(-1,1) / pos_norm**2
+    dphidr1[:, 2] =+ 1 #  dphidr1[:, 2] + 1
+    xysum = pos_sat[:, 0:1]**2
     dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
     dlambdadr = np.zeros(dphidr.shape)
-    dlambdadr[0, :] = -pos_sat[1, :]
-    dlambdadr[1, :] = pos_sat[0, :]
+    dlambdadr[:, 0] = -pos_sat[:, 1]
+    dlambdadr[:, 1] = pos_sat[:, 0]
     dlambdadr = dlambdadr / (np.sum(xysum))
 
     # Acceleration components in te x, y, z directions
-    gx = np.linalg.norm(dUdR * drdr)
-    gy = np.linalg.norm(dUdPhi * dphidr)
-    gz = np.linalg.norm(dUdLambda * dlambdadr)
+    gx = np.linalg.norm((dUdR * drdr.T), axis=0)
+    gy = np.linalg.norm((dUdPhi * dphidr.T), axis=0)
+    gz = np.linalg.norm((dUdLambda * dlambdadr.T), axis=0)
 
     # Acceleration due to Spherical Harmonics
-    a_spherharm = np.array([[gx], [gy], [gz]])
+    a_spherharm = np.array([gx, gy, gz]).T
 
     # Velocity and Acceleration State
-    accel_state = vel_sat.tolist() + a_spherharm.tolist()
+    # accel_state = vel_sat.tolist() + a_spherharm.tolist()
 
-    return accel_state
+    return a_spherharm
 
 
 def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float'= E.mu, num_orbit =1) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:

@@ -6,7 +6,7 @@ from TOOLS.PROPAGATION_TOOLS import sphericalharmonics
 
 
 # CREATING MESHGRID
-dist = E.mu + 1000  # km
+dist = E.mu + 100  # km
 long_grid = np.linspace(-np.pi, np.pi, 360)
 lat_grid = np.linspace(-np.pi/2+1e-4, np.pi/2-1e-4,180)
 
@@ -26,9 +26,26 @@ y = position_Body[:, :, 1]  # Shape: (180, 360)
 z = position_Body[:, :, 2]  # Shape: (180, 360)
 
 pos_body = np.vstack((x.flatten(), y.flatten(), z.flatten())).T
-HarmonicValues = np.loadtxt(r'D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics')
+HarmonicValues = np.loadtxt(r'D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
 
-accel_state = sphericalharmonics(pos_body, 2, HarmonicValues)
+accel_stateJ2 = sphericalharmonics(pos_body, 2, HarmonicValues)
+accel_stateJ2 = np.linalg.norm(accel_stateJ2, axis=1)
+
+# accel_stateJ20 = sphericalharmonics(pos_body, 20, HarmonicValues)
+# accel_stateJ20 = np.linalg.norm(accel_stateJ20, axis=1)
+
+gravity_pointmass = (E.mu / dist**2)
+
+# diff_gravity = accel_stateJ20 - accel_stateJ2
+
+# Comparing J2 to point mass
+accel = (accel_stateJ2 / gravity_pointmass)
+
+plt.pcolormesh(mesh_long*(180/np.pi), mesh_lat*(180/np.pi), accel.reshape(180,360))
+plt.colorbar()
+plt.show()
+
+
 
 # Create a 3D plot
 fig = plt.figure(figsize=(10, 10))
