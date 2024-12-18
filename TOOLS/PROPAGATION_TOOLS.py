@@ -46,7 +46,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     vel_sat = state_sat[:, :3]
 
     # Transforming inputted position into spherical coordinates
-    pos_norm = np.linalg.norm(pos_sat,axis=1)
+    pos_norm = np.linalg.norm(pos_sat, axis=1)
     sat_phi = np.asin(pos_sat[:, 2] / pos_norm)
     sat_lambda = np.atan2(pos_sat[:, 1], pos_sat[:, 0])
 
