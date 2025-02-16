@@ -64,7 +64,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     dudphi_sum = 0
     dudlambda_sum = 0
 
-    #Beginning for Loops to Calculate Recursions
+    # Beginning for Loops to Calculate Recursions
     for Degree in range(2, desired_degree+1):
 
         # Order Array, [1xDegree+1]
@@ -95,8 +95,8 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         Plm_bar = np.zeros([Degree + 2, size_x])
 
         # Assigning Pll and Pllplus1 into Plm_bar
-        Plm_bar[-3, :] = Plm_scaling[-3, :] * Pll
-        Plm_bar[-2, :] = Plm_scaling[-2, :] * Pllminus1
+        Plm_bar[-2, :] = Plm_scaling[-2, :] * Pll
+        Plm_bar[-3, :] = Plm_scaling[-3, :] * Pllminus1
 
         # Calculating sections of Equation 17 to make more readable
         calc1 = (Degree + Order + 1) * (Degree - Order)
