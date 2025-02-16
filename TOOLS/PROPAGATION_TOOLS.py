@@ -144,8 +144,8 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     # Spherical Coordinates to Cartesian
     pos_norm = np.reshape(pos_norm, (np.size(pos_norm, axis=0),1))
     drdr = pos_sat / pos_norm
-    dphidr1 = -pos_sat * pos_sat[:, 2].reshape(-1,1) / pos_norm**2
-    dphidr1[:, 2] =+ 1 #  dphidr1[:, 2] + 1
+    dphidr1 = -pos_sat * pos_sat[:, 2].reshape(-1, 1) / pos_norm**2
+    dphidr1[:, 2] += 1  # dphidr1[:, 2] + 1
     xysum = pos_sat[:, 0:1]**2
     dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
     dlambdadr = np.zeros(dphidr.shape)
