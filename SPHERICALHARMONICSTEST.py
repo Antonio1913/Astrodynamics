@@ -42,7 +42,7 @@ gravity_pointmass = (E.mu / dist**2)
 # diff_gravity = accel_stateJ20 - accel_stateJ2
 
 # Comparing J2 to point mass
-accel = (accel_stateJ2 / gravity_pointmass)
+accel = (accel_stateJ2 / gravity_pointmass) / 100
 
 plt.pcolormesh(mesh_long*(180/np.pi), mesh_lat*(180/np.pi), accel.reshape(180, 360))
 plt.colorbar()
