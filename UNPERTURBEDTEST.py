@@ -1,4 +1,4 @@
-from BODY_CONSTANTS import Earth as E
+from TOOLS.BODY_CONSTANTS import Earth as E
 import numpy as np
 import pandas as pd
 from TOOLS import PLOTTING_TOOLS, PROPAGATION_TOOLS, KEPLER_TOOLS as KT

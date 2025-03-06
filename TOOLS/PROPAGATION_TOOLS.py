@@ -3,7 +3,7 @@ from typing import Tuple
 from numpy.typing import NDArray
 from TOOLS import KEPLER_TOOLS as KP
 import scipy as sc
-from BODY_CONSTANTS import Earth as E
+from TOOLS.BODY_CONSTANTS import Earth as E
 
 
 # pos_states = initial position state

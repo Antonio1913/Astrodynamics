@@ -1,5 +1,5 @@
 import numpy as np
-from BODY_CONSTANTS import Earth as E
+from TOOLS.BODY_CONSTANTS import Earth as E
 import matplotlib.pyplot as plt
 import TOOLS as tls
 # from mpl_toolkits.mplot3d import Axes3D

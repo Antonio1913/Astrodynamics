@@ -1,8 +1,6 @@
-
-import spiceypy as spice
-import numpy as np
+import spicepy as spice
 from SPICE.SPICE_TOOLS import load_kernels, get_objects, tvlist2array, ephemdata
-from TOOLS.PLOTTING_TOOLS import orbitplot
+import TOOLS as tls
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -36,7 +34,7 @@ for name in names:
 # plt.show()
 
 
-orbitplot(body_data, names, AU=True)
+tls.orbitplot(body_data, names, AU=True)
 
 
 

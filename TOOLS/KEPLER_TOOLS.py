@@ -1,10 +1,11 @@
 # THIS FILE STORES THE CODE THAT PROVIDES THE BASE TO PROPAGATE ORBITS.
 from typing import Tuple
-from BODY_CONSTANTS import Earth as E
+import TOOLS as tls
 from numpy.typing import NDArray
 import numpy as np
-from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
-from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
+from .BODY_CONSTANTS import Earth as E
+# from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
+# from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
 
 
 #Universly Defined Values
@@ -121,7 +122,7 @@ def COE2RV(p: float, ecc: float, incl: float, ascending_node: float, arg_perigee
                       0])
 
 #   Rotation operation in order to get the vectors in the geocentric equatorial system
-    Rotations = np.dot(Rot3(-ascending_node), np.dot(Rot1(-incl), Rot3(-arg_perigee)))
+    Rotations = np.dot(tls.Rot3(-ascending_node), np.dot(tls.Rot1(-incl), tls.Rot3(-arg_perigee)))
 
 #   Position vector in the IJK reference frame
     r_vec_IJK = np.dot(Rotations, r_PQW.reshape(3, 1))
@@ -245,7 +246,7 @@ def kepeqtnH(M, e):
             Hn = M + e
     else:
         if e < 3.6 and abs(M) > np.pi:
-            Hn = M - sign(M) * e
+            Hn = M - tls.sign(M) * e
         else:
             Hn = M / (e - 1)
 
@@ -272,7 +273,7 @@ def kepeqtnH(M, e):
 
 def kepeqtnP(delta_t, p, mu):
     n = 2 * np.sqrt(mu / p**3)  # mean motion of the parabolic orbit
-    s = (1/2 * arccot(3/2 * n * delta_t))
+    s = (1/2 * tls.arccot(3/2 * n * delta_t))
     w = (np.atan(np.tan(s)**(1/3)))
     B = (2 * (1 / np.tan(2 * w)))
 
@@ -300,8 +301,8 @@ def kepeqtnP(delta_t, p, mu):
 def KEPLER(r0_vec, v0_vec, delta_t, mu):
 
     # Ensures Correct Variable Structure
-    r0_vec = ensure_numpy_array(r0_vec)
-    v0_vec = ensure_numpy_array(v0_vec)
+    r0_vec = tls.ensure_numpy_array(r0_vec)
+    v0_vec = tls.ensure_numpy_array(v0_vec)
 
 
 #   Calculating the magnitude of the position and velocity
@@ -327,7 +328,7 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
 #   hyperbolic
     elif alpha < -0.000001:
         a = 1 / alpha
-        chi_n = sign(delta_t) * np.sqrt(-a) * np.log((-2 * mu * alpha * delta_t) / (np.dot(r0_vec.T, v0_vec) + (sign(delta_t) * np.sqrt(-mu * a) * (1 - (r0_mag * alpha)))))
+        chi_n = tls.sign(delta_t) * np.sqrt(-a) * np.log((-2 * mu * alpha * delta_t) / (np.dot(r0_vec.T, v0_vec) + (tls.sign(delta_t) * np.sqrt(-mu * a) * (1 - (r0_mag * alpha)))))
 
     #   parabolic
     else:
@@ -335,7 +336,7 @@ def KEPLER(r0_vec, v0_vec, delta_t, mu):
         h_vec = np.linalg.cross(r0_vec.T, v0_vec.T).T
         h_mag = np.linalg.norm(h_vec)
         p = h_mag ** 2 / mu  # Semi-Minor Axis
-        s = arccot(3 * (np.sqrt(mu / p ** 3) * delta_t)) / 2
+        s = tls.arccot(3 * (np.sqrt(mu / p ** 3) * delta_t)) / 2
         w = (np.atan(np.tan(s) ** (1 / 3)))
         chi_n = np.sqrt(p) * 2 * (1 / np.tan(2 * w))
 
