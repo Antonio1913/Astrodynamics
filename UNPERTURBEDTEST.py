@@ -1,9 +1,7 @@
-import KEPLER_TOOLS as KT
-from MEAN_PLANETARY_CONSTANTS import Earth as E
+from BODY_CONSTANTS import Earth as E
 import numpy as np
 import pandas as pd
-from TOOLS import PLOTTING_TOOLS, PROPAGATION_TOOLS
-from TOOLS.PROPAGATION_TOOLS import sphericalharmonics
+from TOOLS import PLOTTING_TOOLS, PROPAGATION_TOOLS, KEPLER_TOOLS as KT
 
 # Defining types of the outputs
 Position = np.ndarray

@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Tuple
 from numpy.typing import NDArray
-import KEPLER_TOOLS as KP
+from TOOLS import KEPLER_TOOLS as KP
 import scipy as sc
-from MEAN_PLANETARY_CONSTANTS import Earth as E
+from BODY_CONSTANTS import Earth as E
 
 
 # pos_states = initial position state

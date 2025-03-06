@@ -1,6 +1,6 @@
 # THIS FILE STORES THE CODE THAT PROVIDES THE BASE TO PROPAGATE ORBITS.
 from typing import Tuple
-from MEAN_PLANETARY_CONSTANTS import Earth as E
+from BODY_CONSTANTS import Earth as E
 from numpy.typing import NDArray
 import numpy as np
 from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot

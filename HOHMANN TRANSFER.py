@@ -3,7 +3,8 @@ import numpy as np
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
 from TOOLS.PROPAGATION_TOOLS import OrbitProp
 from TOOLS.PLOTTING_TOOLS import orbitplot
-import KEPLER_TOOLS as KT
+from TOOLS import KEPLER_TOOLS as KT
+
 
 def HohmannTransfer(r_initial, r_final, mu):
 

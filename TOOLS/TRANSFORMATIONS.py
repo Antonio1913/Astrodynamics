@@ -75,3 +75,26 @@ def JULIANDATE(year, month, day, hour, min, sec):
 
 JD = JULIANDATE(1996, 10, 26, 14, 20, 0)
 print(JD)
+
+# Rotation Matrices
+
+#Rot 1 finds the rotation about the X axis
+def Rot1(alpha):
+    matrix = np.array([[1, 0, 0],
+                      [0, np.cos(alpha), np.sin(alpha)],
+                      [0, -np.sin(alpha), np.cos(alpha)]])
+    return matrix
+
+#Rot 2 finds the rotation about the Y axis
+def Rot2(alpha):
+    matrix = np.array([[np.cos(alpha), 0, -np.sin(alpha)],
+                                    [0, 1, 0],
+                            [np.sin(alpha), 0, np.cos(alpha)]])
+    return matrix
+
+#Rot 3 finds the rotation about the Z axis
+def Rot3(alpha):
+    matrix = np.array([[np.cos(alpha), np.sin(alpha), 0],
+                      [-np.sin(alpha), np.cos(alpha), 0],
+                                        [0, 0, 1]])
+    return matrix

@@ -22,7 +22,7 @@
 
 import numpy as np
 from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
-import KEPLER_TOOLS
+from TOOLS import KEPLER_TOOLS
 from TOOLS.FUNCTIONS import DoubleRangeValue, withinrange
 
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,

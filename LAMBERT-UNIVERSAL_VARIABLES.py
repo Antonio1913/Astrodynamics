@@ -5,8 +5,7 @@ import spiceypy as spice
 from TOOLS.PLOTTING_TOOLS import orbitplot
 from SPICE.SPICE_TOOLS import load_kernels, ephemdata, tvlist2array
 import matplotlib.pyplot as plt
-import KEPLER_TOOLS as KT
-
+from TOOLS import KEPLER_TOOLS as KT
 
 
 def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
