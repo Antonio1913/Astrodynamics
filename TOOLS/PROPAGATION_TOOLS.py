@@ -82,8 +82,8 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         values_end = sum(range(3, Degree + 2))
         values_beg = values_end - Degree
 
-        C = np.array(Harmonic_values[values_beg-1:values_end, 2]).reshape(-1, 1)
-        S = np.array(Harmonic_values[values_beg-1:values_end, 3]).reshape(-1, 1)
+        C = np.array(Harmonic_values[values_beg-1:values_end, 0]).reshape(-1, 1)
+        S = np.array(Harmonic_values[values_beg-1:values_end, 1]).reshape(-1, 1)
 
         # EQUATION 14 - Calculating Pl,l
         Pll = (sc.special.factorial((2 * Degree) - 1) / (2**(Degree - 1) * sc.special.factorial(Degree - 1))) * (xval**(Degree / 2))
