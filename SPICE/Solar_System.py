@@ -1,4 +1,4 @@
-import spicepy as spice
+import spiceypy as spice
 from SPICE.SPICE_TOOLS import load_kernels, get_objects, tvlist2array, ephemdata
 import TOOLS as tls
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 load_kernels('solar_system_kernels.tm')
 ids, names, tcs_sec, tcs_cal = get_objects(r'..//SPICE_KERNELS\de440.bsp', display=True)
 
-dates = ['1849 DEC 26 00:12:00', '2125 Dec 31 00:00:00']
+dates = ['1950 DEC 26 00:12:00', '2025 Dec 31 00:00:00']
 
 et0 = spice.str2et(dates[0])
 etf = spice.str2et(dates[1])
