@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # body_data - should be a list
 
 def orbitplot(body_data, names, AU = False):
@@ -98,6 +99,7 @@ def orbitplot(body_data, names, AU = False):
 
     # Displays the Plot
     plt.show(block=True)
+
 
 def equalaxis(body_data):
     # Set equal scaling
