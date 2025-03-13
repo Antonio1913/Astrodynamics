@@ -3,8 +3,7 @@
 import numpy as np
 import spiceypy as spice
 from TOOLS.PLOTTING_TOOLS import orbitplot
-from SPICE.SPICE_TOOLS import load_kernels, ephemdata, tvlist2array
-import matplotlib.pyplot as plt
+from TOOLS.SPICE_TOOLS import load_kernels, ephemdata, tvlist2array
 from TOOLS import KEPLER_TOOLS as KT
 
 
