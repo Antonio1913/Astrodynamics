@@ -2,6 +2,7 @@ import numpy as np
 from TOOLS.BODY_CONSTANTS import Earth as E
 import matplotlib.pyplot as plt
 import TOOLS as tls
+import os
 # from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -29,7 +30,10 @@ pos_body = np.vstack((x.flatten(), y.flatten(), z.flatten())).T
 
 # --------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------
-HarmonicValues = np.loadtxt(r'C:\Users\Antonio Garcia\PycharmProjects\Astrodynamics\ASSETS\EGM2008.txt', delimiter=',', skiprows=1)
+
+# LOADING THE EGM2008 COEFFICIENTS
+egm_location = os.path.abspath(r"ASSETS\\EGM2008.txt")
+HarmonicValues = np.loadtxt(egm_location, delimiter=',', skiprows=1)
 
 accel_stateJ2 = tls.sphericalharmonics(pos_body, 2, HarmonicValues)
 accel_stateJ2 = np.linalg.norm(accel_stateJ2, axis=1)

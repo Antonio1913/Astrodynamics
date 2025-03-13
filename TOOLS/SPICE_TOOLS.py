@@ -6,7 +6,7 @@ import os
 # Finds the current metakernel
 def load_kernels(metakernel_filename='solar_system_kernels.tm'):
     # Define the path to the metakernel file
-    metakernel_path = os.path.abspath('solar_system_kernels.tm')
+    metakernel_path = os.path.abspath(r'SPICE\\solar_system_kernels.tm')
 
     # Ensure the metakernel file exists
     if not os.path.exists(metakernel_path):

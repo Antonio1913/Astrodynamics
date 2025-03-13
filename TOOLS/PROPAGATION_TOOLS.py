@@ -8,9 +8,8 @@ from TOOLS.BODY_CONSTANTS import Earth as E
 
 # pos_states = initial position state
 # Sat_state = should be a list 1
-def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]], mu: 'float'= E.mu) \
+def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]], mu: 'float' = E.mu) \
         -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
-
     if np.size(Sat_state) < 5:
         np.transpose(Sat_state)
 
@@ -24,7 +23,7 @@ def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]],
     dt_counter = 0
 
     for i in range(1, N):
-        r_vec_new, v_vec_new = KP.KEPLER(Sat_states[:3, i-1], Sat_states[3:, i-1], dt, mu)
+        r_vec_new, v_vec_new = KP.KEPLER(Sat_states[:3, i - 1], Sat_states[3:, i - 1], dt, mu)
         Sat_states[:, i] = np.concatenate((r_vec_new, v_vec_new))
         dt_counter = dt_counter + dt
 
@@ -40,7 +39,6 @@ def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]],
 
 #   pos_sat                     - [3xN]position vector of orbiting body
 def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
-
     # Extracting pos_sat and vel_sat from state_sat
     pos_sat = state_sat[:, :3]
     vel_sat = state_sat[:, :3]
@@ -55,8 +53,8 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
 
     # Calculating x value, [1xN]
     x = np.sin(sat_phi)
-    xval = 1 - (x**2)
-    xval2 = x / xval**(1/2)
+    xval = 1 - (x ** 2)
+    xval2 = x / xval ** (1 / 2)
     size_x = np.size(x)
 
     # Pre-Allocating Summation Arrays
@@ -65,7 +63,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     dudlambda_sum = 0
 
     # Beginning for Loops to Calculate Recursions
-    for Degree in range(2, desired_degree+1):
+    for Degree in range(2, desired_degree + 1):
 
         # Order Array, [1xDegree+1]
         Order = np.arange(Degree + 2).reshape(-1, 1)
@@ -76,17 +74,19 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         deltam0[0] = 1
 
         # EQUATION 10, Normalization Scaling Factor for Plm
-        Plm_scaling = ((2 - deltam0) * ((2 * Degree) + 1) * (sc.special.factorial(Degree - Order) / sc.special.factorial(Degree + Order))) ** (1/2)
+        Plm_scaling = ((2 - deltam0) * ((2 * Degree) + 1) * (
+                    sc.special.factorial(Degree - Order) / sc.special.factorial(Degree + Order))) ** (1 / 2)
 
         # Assigning C and S values from the Normalized Harmonic Values, [1, Degree+1]
         values_end = sum(range(3, Degree + 2))
         values_beg = values_end - Degree
 
-        C = np.array(Harmonic_values[values_beg-1:values_end, 2]).reshape(-1, 1)
-        S = np.array(Harmonic_values[values_beg-1:values_end, 3]).reshape(-1, 1)
+        C = np.array(Harmonic_values[values_beg - 1:values_end, 2]).reshape(-1, 1)
+        S = np.array(Harmonic_values[values_beg - 1:values_end, 3]).reshape(-1, 1)
 
         # EQUATION 14 - Calculating Pl,l
-        Pll = (sc.special.factorial((2 * Degree) - 1) / (2**(Degree - 1) * sc.special.factorial(Degree - 1))) * (xval**(Degree / 2))
+        Pll = (sc.special.factorial((2 * Degree) - 1) / (2 ** (Degree - 1) * sc.special.factorial(Degree - 1))) * (
+                    xval ** (Degree / 2))
 
         # Calculating Pl,l-1 (degrees - 2 stores values into first column, -3 stores value into third to last column
         Pllminus1 = xval2 * Pll
@@ -100,8 +100,8 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
 
         # Calculating sections of Equation 17 to make more readable
         calc1 = (Degree + Order + 1) * (Degree - Order)
-        calc2 = (2 * (Order + 1)) * (1 / calc1)**(1/2) * xval2
-        calc3 = (((Degree + Order + 2) * (Degree - Order - 1)) / calc1)**(1/2)
+        calc2 = (2 * (Order + 1)) * (1 / calc1) ** (1 / 2) * xval2
+        calc3 = (((Degree + Order + 2) * (Degree - Order - 1)) / calc1) ** (1 / 2)
 
         # For Loop Calculates the remaining order values
         for order in range(Degree - 2, -1, -1):
@@ -109,12 +109,12 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
 
         # Equation (8-25) du/dr
         # Calculating last section for dudr Equation (8-25)
-        C_calc = C * np.cos(Order[0:Degree+1, :] * sat_lambda)
-        S_calc = S * np.sin(Order[0:Degree+1, :] * sat_lambda)
-        mtanphi = Order[0:Degree+1] * np.tan(sat_phi)
+        C_calc = C * np.cos(Order[0:Degree + 1, :] * sat_lambda)
+        S_calc = S * np.sin(Order[0:Degree + 1, :] * sat_lambda)
+        mtanphi = Order[0:Degree + 1] * np.tan(sat_phi)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudr = np.sum(pos_ratio**Degree * (Degree + 1) * Plm_bar[0:Degree+1, :] * (C_calc + S_calc), axis=0)
+        dudr = np.sum(pos_ratio ** Degree * (Degree + 1) * Plm_bar[0:Degree + 1, :] * (C_calc + S_calc), axis=0)
 
         # Equation (8-25) du/dphi
         # Creating Variable for Plm_plus1
@@ -126,10 +126,13 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         Plm_plus1corrected[-1, :] = 0
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudphi = np.sum((pos_ratio**Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree+1, :])) * (C_calc + S_calc), axis=0)
+        dudphi = np.sum(
+            (pos_ratio ** Degree) * (Plm_plus1corrected - (mtanphi * Plm_bar[0:Degree + 1, :])) * (C_calc + S_calc),
+            axis=0)
 
         # Calculating Equation (8-25) - *************** Ensure np.sum takes the sum up the columns to make a [1xN]
-        dudlambda = np.sum((pos_ratio**Degree) * (Order[0:Degree+1] * Plm_bar[0:Degree+1, :]) * (C_calc + S_calc), axis=0)
+        dudlambda = np.sum((pos_ratio ** Degree) * (Order[0:Degree + 1] * Plm_bar[0:Degree + 1, :]) * (C_calc + S_calc),
+                           axis=0)
 
         # Summation Calculations for All Degree and Order
         dudr_sum = dudr_sum + dudr
@@ -137,16 +140,16 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
         dudlambda_sum = dudlambda_sum + dudlambda
 
     # Final Calculations for Equation (8-25)
-    dUdR = (-mu / pos_norm**2) * dudr_sum
+    dUdR = (-mu / pos_norm ** 2) * dudr_sum
     dUdPhi = (mu / pos_norm) * dudphi_sum
     dUdLambda = (mu / pos_norm) * dudlambda_sum
 
     # Spherical Coordinates to Cartesian
-    pos_norm = np.reshape(pos_norm, (np.size(pos_norm, axis=0),1))
+    pos_norm = np.reshape(pos_norm, (np.size(pos_norm, axis=0), 1))
     drdr = pos_sat / pos_norm
-    dphidr1 = -pos_sat * pos_sat[:, 2].reshape(-1, 1) / pos_norm**2
+    dphidr1 = -pos_sat * pos_sat[:, 2].reshape(-1, 1) / pos_norm ** 2
     dphidr1[:, 2] += 1  # dphidr1[:, 2] + 1
-    xysum = pos_sat[:, 0:1]**2
+    xysum = pos_sat[:, 0:1] ** 2
     dphidr = dphidr1 / (np.sqrt(np.sum(xysum)))
     dlambdadr = np.zeros(dphidr.shape)
     dlambdadr[:, 0] = -pos_sat[:, 1]
@@ -167,9 +170,10 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     return a_spherharm
 
 
-def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float'= E.mu, num_orbit =1) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
-    state_sat_init = np.concatenate((pos_sat, vel_sat)) # np.array(6,)
-    period_sat = 2 * np.pi * (np.sqrt(a**3 / mu))
+def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float' = E.mu, num_orbit=1) -> Tuple[
+    NDArray[np.float64], NDArray[np.float64]]:
+    state_sat_init = np.concatenate((pos_sat, vel_sat))  # np.array(6,)
+    period_sat = 2 * np.pi * (np.sqrt(a ** 3 / mu))
     num_time_int = 1000
     time_vec = np.linspace(0, period_sat * num_orbit, num_time_int)
     states, positions = OrbitProp(time_vec, state_sat_init, mu)
@@ -177,7 +181,6 @@ def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'flo
 
 
 def rkutta4(f, t, y, h):
-
     # Calculate one Runge-Kutta4 step
     k1 = f(t, y)
     k2 = f(t + 0.5 * h, y + 0.5 * k1 * h)
