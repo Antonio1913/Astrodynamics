@@ -24,9 +24,7 @@ PLOTTING_TOOLS.orbitplot(positions, ['Satellite No-Perturbations'])
 
 HarmonicValues = np.loadtxt(r'D:\ASTRODYNAMICS\EGM2008_Spherical_Harmonics\EGM2008')
 first_state = positions[:, 0].T
-first_state = first_state.reshape(3,1)
+first_state = first_state.reshape(3, 1)
 
 # accel_state = sphericalharmonics(first_state, 30, HarmonicValues)
 # harmonic_df = pd.DataFrame(HarmonicValues)
-
-

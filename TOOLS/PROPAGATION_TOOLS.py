@@ -35,13 +35,13 @@ def OrbitProp(time_vec: [NDArray[np.float64]], Sat_state: [NDArray[np.float64]],
 
 # Spherical harmonic function will calculate the effect of Earths gravity at the inputted position vector.
 
-#INPUT
+# INPUT
 
 #   pos_sat                     - [3xN]position vector of orbiting body
 def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bod=E.Radius):
     # Extracting pos_sat and vel_sat from state_sat
     pos_sat = state_sat[:, :3]
-    vel_sat = state_sat[:, :3]
+    # vel_sat = state_sat[:, :3]
 
     # Transforming inputted position into spherical coordinates
     pos_norm = np.linalg.norm(pos_sat, axis=1)
@@ -75,7 +75,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
 
         # EQUATION 10, Normalization Scaling Factor for Plm
         Plm_scaling = ((2 - deltam0) * ((2 * Degree) + 1) * (
-                    sc.special.factorial(Degree - Order) / sc.special.factorial(Degree + Order))) ** (1 / 2)
+                sc.special.factorial(Degree - Order) / sc.special.factorial(Degree + Order))) ** (1 / 2)
 
         # Assigning C and S values from the Normalized Harmonic Values, [1, Degree+1]
         values_end = sum(range(3, Degree + 2))
@@ -86,7 +86,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
 
         # EQUATION 14 - Calculating Pl,l
         Pll = (sc.special.factorial((2 * Degree) - 1) / (2 ** (Degree - 1) * sc.special.factorial(Degree - 1))) * (
-                    xval ** (Degree / 2))
+                xval ** (Degree / 2))
 
         # Calculating Pl,l-1 (degrees - 2 stores values into first column, -3 stores value into third to last column
         Pllminus1 = xval2 * Pll
@@ -170,8 +170,7 @@ def sphericalharmonics(state_sat, desired_degree, Harmonic_values, mu=E.mu, r_bo
     return a_spherharm
 
 
-def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float' = E.mu, num_orbit=1) -> Tuple[
-    NDArray[np.float64], NDArray[np.float64]]:
+def Unperturbed_Orbit(pos_sat: np.array, vel_sat: np.array, a: 'float', mu: 'float' = E.mu, num_orbit=1) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
     state_sat_init = np.concatenate((pos_sat, vel_sat))  # np.array(6,)
     period_sat = 2 * np.pi * (np.sqrt(a ** 3 / mu))
     num_time_int = 1000

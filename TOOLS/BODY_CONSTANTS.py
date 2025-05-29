@@ -1,4 +1,6 @@
 # VALUES DISPLAYED ARE IN REFERENCE OF EPOCH J2000
+
+
 class Earth:
     SMA = 149598023  # km
     ecc = 0.016708617
@@ -18,4 +20,3 @@ class Earth:
     Incl_equatorial = 23.45  # degrees
     J2 = 0.0010826269
     angularvelocity = 7.2722 * 10**-5  # rad/s
-

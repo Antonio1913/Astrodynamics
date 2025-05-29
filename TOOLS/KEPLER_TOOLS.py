@@ -4,11 +4,9 @@ import TOOLS as tls
 from numpy.typing import NDArray
 import numpy as np
 from .BODY_CONSTANTS import Earth as E
-# from TOOLS.FUNCTIONS import Rot1, Rot3, sign, arccot
-# from TOOLS.STRUCTURE_TOOLS import ensure_numpy_array
 
 
-#Universly Defined Values
+# Universally Defined Values
 tolerance = 1 * 10**-12    # The standard tolerance for Newton_Raphson Method
 max_iterations = 100     # Maximizes the number of iterations to 20
 
@@ -83,7 +81,7 @@ def COE2RV(p: float, ecc: float, incl: float, ascending_node: float, arg_perigee
     if len(args) > 1:
         raise ValueError(f"Too many inputs, ensure the only args inputted correspond to the type of orbit")
 
-        #Setting Conditional Terms
+        # Setting Conditional Terms
         # Circular and Equatorial
     if abs(ecc) < tolerance and abs(incl) < tolerance:
         # args[0] == "lambda_true"
@@ -133,8 +131,8 @@ def COE2RV(p: float, ecc: float, incl: float, ascending_node: float, arg_perigee
     return np.squeeze(r_vec_IJK), np.squeeze(v_vec_IJK)  # np.array(3,)
 
 ################################################################################################
-# This function solves C2(Chi) and C3(Chi) functions. These values are used to plug into the Kepler equations in terms of
-# the universal-variable.
+# This function solves C2(Chi) and C3(Chi) functions. These values are used to plug into the Kepler equations in terms
+# of the universal-variable.
 # The following statements are ordered elliptical, parabolic, hyperbolic.
 
 # INPUTS
@@ -184,7 +182,7 @@ def FINDTOF(r0_vec, r_vec, p, mu):
     f = 1 - ((r_vec / p) * (1 - np.cos(delta_true_anomaly)))
     g = (r0_mag * r_vec * np.sin(delta_true_anomaly)) / (np.sqrt(mu * p))
 
-    #Elliptical Orbit case where a > 0
+    # Elliptical Orbit case where a > 0
     if a > 0:
         f_dot = np.sqrt(mu/p) * np.tan(delta_true_anomaly / 2) * (((1 - np.cos(delta_true_anomaly)) / p) - (1 / r0_mag) - (1 / r_mag))
         delta_E = np.acos(1 - ((r0_mag / a) * (1 - f)))
@@ -200,7 +198,7 @@ def FINDTOF(r0_vec, r_vec, p, mu):
         delta_H = np.acosh(1 + (f - 1) * (r0_mag / a))
         TOF = g + (np.sqrt((-a)**3 / mu) * (np.sinh(delta_H) - delta_H))
 
-    return TOF
+        return TOF  # ENSURE THIS WORKS IF THIS FUNCTION IS USED HASN'T BEEN CHECKED YET
 
 
 ################################################################################################
@@ -424,7 +422,7 @@ def KeplerCOE(r0_vec, v0_vec, delta_t, mu):
         h_vec = np.linalg.cross(r0_vec, v0_vec)
         h_mag = np.linalg.norm(h_vec)
         p = h_mag**2 / mu
-        #M0 = anomaly0 + (anomaly0**3 / 3)
+        # M0 = anomaly0 + (anomaly0**3 / 3)
         anomaly = kepeqtnP(delta_t, p, mu)  # Parabolic anomaly
         r_mag = p / 2 * (1 + anomaly**2)
         anomaly_type = "Parabolic"
@@ -511,10 +509,10 @@ def RV2COE(r_ijk, v_ijk, mu=E.mu):
         # p = h_mag**2 / mu  # km
         a = float('inf')  # km
 
-    #Inclination
+    # Inclination
     incl = (np.acos(h_vec[2] / h_mag))
 
-    #Ascending Node
+    # Ascending Node
     if n_mag > 0:
         ascending_node = (np.acos(n_vec[0] / n_mag))
     else:
@@ -533,7 +531,7 @@ def RV2COE(r_ijk, v_ijk, mu=E.mu):
     if np.dot(r_ijk.T, v_ijk) < 0:
         true_anomaly = (2 * np.pi) - true_anomaly
 
-    #Special Cases
+    # Special Cases
     # Elliptical and Equatorial - True Argument of Perigee
     arg_perigee_true = (np.acos(ecc_vec[0] / ecc))
     if ecc_vec[1] < 0:
@@ -567,16 +565,13 @@ def RV2COE(r_ijk, v_ijk, mu=E.mu):
 
 def nutoAnomaly(e, nu):
     if e < 1.0:
-        #E1 = np.asin((np.sin(nu) * np.sqrt(1 - e**2)) / (1 + (e * np.cos(nu))))
+        # E1 = np.asin((np.sin(nu) * np.sqrt(1 - e**2)) / (1 + (e * np.cos(nu))))
         E = np.acos((e + np.cos(nu)) / (1 + (e * np.cos(nu))))
         return E
     elif e == 1:
         B = np.tan(nu / 2)
         return B
     else:
-        #H1 = np.asinh((np.sin(nu) * np.sqrt(e**2 - 1)) / (1 + (e * np.cos(nu))))
+        # H1 = np.asinh((np.sin(nu) * np.sqrt(e**2 - 1)) / (1 + (e * np.cos(nu))))
         H = np.acosh((e + np.cos(nu)) / (1 + (e * np.cos(nu))))
         return H
-
-
-

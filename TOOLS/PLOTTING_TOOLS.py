@@ -5,9 +5,9 @@ import numpy as np
 
 # body_data - should be a list
 
-def orbitplot(body_data, names, AU = False):
+def orbitplot(body_data, names, AU=False):
 
-    #Defining the Conversion between AU and Km
+    # Defining the Conversion between AU and Km
     km2AU = 1.496*10**8
 
     # Define desired dimensions in pixels
@@ -33,7 +33,7 @@ def orbitplot(body_data, names, AU = False):
     ax = fig.add_subplot(111, projection='3d')
     ax.set_facecolor('black')
 
-    #Initializing Limits
+    # Initializing Limits
     max_xlim = [float('inf'), -float('inf')]
     max_ylim = [float('inf'), -float('inf')]
     max_zlim = [float('inf'), -float('inf')]
@@ -43,9 +43,9 @@ def orbitplot(body_data, names, AU = False):
 
         for i, bodies in enumerate(body_data):
             if AU:
-                bodies /=  km2AU
-                ax.plot(bodies[:, 0] , bodies[:, 1], bodies[:, 2], label=names[i])
-                ax.plot(bodies[0, 0] , bodies[0, 1], bodies[0, 2], 'o')
+                bodies /= km2AU
+                ax.plot(bodies[:, 0], bodies[:, 1], bodies[:, 2], label=names[i])
+                ax.plot(bodies[0, 0], bodies[0, 1], bodies[0, 2], 'o')
             else:
                 ax.plot(bodies[:, 0], bodies[:, 1], bodies[:, 2], label=names)
                 ax.plot(bodies[0, 0], bodies[0, 1], bodies[0, 2], 'o')
@@ -116,9 +116,3 @@ def equalaxis(body_data):
     set_zlim = (mid_z - max_range, mid_z + max_range)
 
     return set_xlim, set_ylim, set_zlim
-
-
-
-
-
-

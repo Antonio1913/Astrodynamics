@@ -4,9 +4,9 @@ import os
 
 
 # Finds the current metakernel
-def load_kernels(metakernel_filename='solar_system_kernels.tm'):
+def load_kernels():
     # Define the path to the metakernel file
-    metakernel_path = os.path.abspath(r'SPICE\\solar_system_kernels.tm')
+    metakernel_path = os.path.abspath(r'solar_system_kernels.tm')
 
     # Ensure the metakernel file exists
     if not os.path.exists(metakernel_path):
@@ -29,7 +29,6 @@ def main():
     # Unload kernels after use
     spice.kclear()
     return et
-
 
 
 # Pulls ID, names and time coverages of the objects in the spk file
@@ -75,9 +74,7 @@ def tvlist2array(et0, etf, steps):
     time_vec[:, 0] = np.linspace(et0, etf, steps)
     return time_vec
 
+
 # Gets Ephemeris Data Using Spice.spekzr
 def ephemdata(target, time, ref, observer):
     return np.array(spice.spkezr(target, time, ref, 'NONE', observer)[0])
-
-
-

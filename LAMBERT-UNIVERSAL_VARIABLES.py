@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import spiceypy as spice
 from TOOLS.PLOTTING_TOOLS import orbitplot
@@ -7,15 +5,14 @@ from TOOLS.SPICE_TOOLS import load_kernels, ephemdata, tvlist2array
 from TOOLS import KEPLER_TOOLS as KT
 
 
-def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
-
-# Defining Position Magnitudes
+def Lam_universe_var(r0_vec, r_vec, delta_t, t_m, mu):
+    # Defining Position Magnitudes
     r0_mag = np.linalg.norm(r0_vec)
     r_mag = np.linalg.norm(r_vec)
 
     cos_delta_v = np.dot(r0_vec, r_vec) / (r0_mag * r_mag)
-    delta_v = np.acos(cos_delta_v)
-    sin_delta_v = t_m * np.sqrt(1 - (cos_delta_v*2))
+    # delta_v = np.acos(cos_delta_v)
+    # sin_delta_v = t_m * np.sqrt(1 - (cos_delta_v*2))
     A = t_m * np.sqrt(r_mag * r0_mag * (1 + cos_delta_v))
 
     if A == 0:
@@ -70,10 +67,7 @@ def Lam_universe_var (r0_vec, r_vec, delta_t, t_m, mu):
     return v0_vec, v_vec
 
 
-
-
 # Testing Lambert Code
-
 # Loading Kernels
 load_kernels('solar_system_kernels.tm')
 
@@ -124,7 +118,6 @@ for i in range(1, len(time_vec)):
 spacecraft_states = np.array(spacecraft_states)
 positions = spacecraft_states[:, :3]
 
-#Naming and Plotting the Planetary and Spacecraft Data
+# Naming and Plotting the Planetary and Spacecraft Data
 names = ['Earth', 'Venus', 'Spacecraft']
 orbitplot([Earth_vec[:, :3], Venus_vec[:, :3], positions[:, :3]], names)
-
