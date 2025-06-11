@@ -5,3 +5,4 @@ from .STRUCTURE_TOOLS import *
 from .KEPLER_TOOLS import *
 from .TRANSFORMATIONS import *
 from .SPICE_TOOLS import *
+from .TRAJECTORY_PLANNING import *
