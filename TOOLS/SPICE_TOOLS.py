@@ -4,9 +4,9 @@ import os
 
 
 # Finds the current metakernel
-def load_kernels():
+def load_kernels(file_name):
     # Define the path to the metakernel file
-    metakernel_path = os.path.abspath(r'solar_system_kernels.tm')
+    metakernel_path = os.path.abspath(file_name)
 
     # Ensure the metakernel file exists
     if not os.path.exists(metakernel_path):
@@ -75,6 +75,6 @@ def tvlist2array(et0, etf, steps):
     return time_vec
 
 
-# Gets Ephemeris Data Using Spice.spekzr
+# Gets Ephemeris Data Using Spice.spkezr
 def ephemdata(target, time, ref, observer):
     return np.array(spice.spkezr(target, time, ref, 'NONE', observer)[0])

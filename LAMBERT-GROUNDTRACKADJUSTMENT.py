@@ -21,9 +21,9 @@
 
 
 import numpy as np
-from BODY_VALUES.MEAN_PLANETARY_CONSTANTS import Earth as E
-from TOOLS import KEPLER_TOOLS
-from TOOLS.FUNCTIONS import DoubleRangeValue, withinrange
+import TOOLS as tls
+from TOOLS.BODY_CONSTANTS import Earth as E
+
 
 def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, L_G, phi_G,
                      r_min, r_max, D, incl, H_2, kappa, K, *arg):
@@ -34,7 +34,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 
 # Step 1 Defining Omega, u, theta, delta_l, lambda_max
 #   Defining r1 using the initial Satellite Parameters
-    r1_vec, v1_vec = KEPLER_TOOLS.COE2RV(a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.mu, "none")
+    r1_vec, v1_vec = tls.COE2RV(a_star, ecc_star, incl_star, ascending_node_star, arg_perigee_star, true_anomaly_star, E.mu, "none")
     r1 = np.linalg.norm(r1_vec)
 
 #   Argument of Latitude of the Spacecrafts Initial Orbit at T1
@@ -308,7 +308,7 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 
         psi = 1.5 * np.sin(incl ** 2 - 1)
         # Case 1 Inc is within the range
-        if incl in range(0, np.pi/2):
+        if incl in range(0, np.pi / 2):
             # Case 1 for [0, pi/2]
             omega_J2_min = -B_J2 * r_min_exp * np.cos(incl)
             omega_J2_max = -B_J2 * r_max_exp * np.cos(incl)
@@ -346,27 +346,3 @@ def ExtendedLambert(t1, a_star, ecc_star, incl_star, ascending_node_star, arg_pe
 # STEP 6 FOR LOOP TO RUN THROUGH THE RANGE OF REVOLUTIONS
     for i in range(Nmin, Nmax):
         if N == 0:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

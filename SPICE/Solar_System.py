@@ -2,7 +2,7 @@ import spiceypy as spice
 import TOOLS as tls
 
 # LOADING KERNEL FILES
-tls.load_kernels()
+tls.load_kernels(r'solar_system_kernels.tm')
 
 # EXTRACTING INFORMATION FROM SPK FILE
 ids, names, tcs_sec, tcs_cal = tls.get_objects(r'..\\SPICE\\SPICE_KERNELS\de440.bsp', display=True)
