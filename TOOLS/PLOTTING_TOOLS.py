@@ -20,18 +20,28 @@ def orbitplot(body_data, names, AU=False):
     height_in_inches = height_in_pixels / desired_dpi
 
     # Setting the Global Properties of the Figure
-    # Setting Surrounding Background of Plot to Black
-    plt.rcParams['axes.facecolor'] = 'black'
-
     # Setting the Type of Font and Font Size
     plt.rcParams['font.family'] = 'serif'
     plt.rcParams['font.serif'] = 'Times New Roman'
     plt.rcParams['font.size'] = 12
 
-    # Adjusted the Characteristics of the Figure
-    fig = plt.figure(facecolor='black', figsize=(width_in_inches, height_in_inches), dpi=desired_dpi)
+    # SETTING AXES CONFIGURATIONS
+    plt.rcParams['axes3d.xaxis.panecolor'] = "black"
+    plt.rcParams['axes3d.yaxis.panecolor'] = "black"
+    plt.rcParams['axes3d.zaxis.panecolor'] = "black"
+    plt.rcParams['axes.facecolor'] = "black"
+    plt.rcParams['axes.labelcolor'] = "white"
+
+    # SETTING LEGEND CONFIGURATIONS
+    plt.rcParams['legend.labelcolor'] = "white"
+    plt.rcParams['legend.facecolor'] = "black"
+
+    # SETTING FIGURE CONFIGURATIONS
+    plt.rcParams['figure.facecolor'] = "black"
+
+    # CREATING THE FIGURE
+    fig = plt.figure(figsize=(width_in_inches, height_in_inches), dpi=desired_dpi)
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_facecolor('black')
 
     # Initializing Limits
     max_xlim = [float('inf'), -float('inf')]
@@ -58,6 +68,7 @@ def orbitplot(body_data, names, AU=False):
             max_ylim = [min(max_ylim[0], set_ylim[0]), max(max_ylim[1], set_ylim[1])]
             max_zlim = [min(max_zlim[0], set_zlim[0]), max(max_zlim[1], set_zlim[1])]
 
+
     else:
         if AU:
             ax.plot(body_data[:, 0] / km2AU, body_data[:, 1] / km2AU, body_data[:, 2] / km2AU, label=names)
@@ -70,9 +81,9 @@ def orbitplot(body_data, names, AU=False):
         set_xlim, set_ylim, set_zlim = equalaxis(body_data)
 
         # Updating Limit To Account For All Groups of Data
-        max_xlim = [max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1])]
-        max_ylim = [max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1])]
-        max_zlim = [max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1])]
+        max_xlim = (max(max_xlim[0], set_xlim[0]), min(max_xlim[1], set_xlim[1]))
+        max_ylim = (max(max_ylim[0], set_ylim[0]), min(max_ylim[1], set_ylim[1]))
+        max_zlim = (max(max_zlim[0], set_zlim[0]), min(max_zlim[1], set_zlim[1]))
 
     # Setting Axis Limits
     ax.set_xlim(max_xlim)
@@ -81,21 +92,22 @@ def orbitplot(body_data, names, AU=False):
 
     # Adjusts the Characteristics of the Plot
     if AU:
-        ax.set_xlabel('X (AU)', color='white')
-        ax.set_ylabel('Y (AU)', color='white')
-        ax.set_zlabel('Z (AU)', color='white')
+        ax.set_xlabel('X (AU)')
+        ax.set_ylabel('Y (AU)')
+        ax.set_zlabel('Z (AU)')
 
     else:
-        ax.set_xlabel('X (Km)', color='white')
-        ax.set_ylabel('Y (Km)', color='white')
-        ax.set_zlabel('Z (Km)', color='white')
+        ax.set_xlabel('X (Km)')
+        ax.set_ylabel('Y (Km)')
+        ax.set_zlabel('Z (Km)')
 
+    # SETTING TICK MARK CONFIGURATIONS
     ax.tick_params(axis='x', colors='white')
     ax.tick_params(axis='y', colors='white')
     ax.tick_params(axis='z', colors='white')
 
-    # Adjusted the Characteristics of the Legend
-    ax.legend(facecolor='white', bbox_to_anchor=(1.05, 0.5))
+    # SETTING LEGEND POSITION
+    ax.legend(bbox_to_anchor=(1.65, 0.35))
 
     # Displays the Plot
     plt.show(block=True)

@@ -16,14 +16,14 @@ steps = 10000
 time_vec = tls.tvlist2array(et0, etf, steps)
 
 body_numbers = [599, 501, 502, 503, 504, 505, 514, 515, 516]
-names = ["IO", "EUROPA", "GANYMEDE", "CALLISTO", "AMALTHEA", "ADRASTEA", "METIS"]
+jup_moons = ["IO", "EUROPA", "GANYMEDE", "CALLISTO", "AMALTHEA", "ADRASTEA", "METIS"]
 
 # PRE ALLOCATING VARIABLE FOR PLANETARY DATA
 body_data = []
 
 # EXTRACTING THE POSITION DATA FOR EACH PLANET
-for name in names:
+for jup_moon in jup_moons:
     # Adding Ephem Data into the List
-    body_data.append(tls.ephemdata(name, time_vec, 'ECLIPJ2000', '599'))
+    body_data.append(tls.ephemdata(jup_moon, time_vec, 'ECLIPJ2000', '599'))
 
-tls.orbitplot(body_data, names, AU=True)
+tls.orbitplot(body_data, jup_moons, AU=True)
