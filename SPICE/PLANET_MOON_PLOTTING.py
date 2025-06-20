@@ -12,7 +12,7 @@ file_name = tls.load_spk("JUPITER", "jup365.bsp")
 ids, names, tcs_sec, tcs_cal = tls.get_objects(file_name, display=True)
 
 # DATES FOR ANALYSIS
-dates = ['2025 JUN 1 00:12:00', '2025 JUN 20 00:00:00']
+dates = ['2014 JUN 1 00:12:00', '2025 JUN 20 00:00:00']
 et0 = sp.str2et(dates[0])
 etf = sp.str2et(dates[1])
 steps = 10000
@@ -29,6 +29,6 @@ body_data = []
 # EXTRACTING THE POSITION DATA FOR EACH PLANET
 for jup_moon in jup_moons:
     # Adding Ephem Data into the List
-    body_data.append(tls.ephemdata(jup_moon, time_vec, 'ECLIPJ2000', '599'))
+    body_data.append(tls.ephemdata(jup_moon, time_vec, 'ECLIPJ2000', '10'))
 
 tls.orbitplot(body_data, jup_moons, AU=True)
