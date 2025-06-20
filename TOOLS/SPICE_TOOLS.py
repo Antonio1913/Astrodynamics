@@ -78,3 +78,18 @@ def tvlist2array(et0, etf, steps):
 # Gets Ephemeris Data Using Spice.spkezr
 def ephemdata(target, time, ref, observer):
     return np.array(spice.spkezr(target, time, ref, 'NONE', observer)[0])
+
+# LOADS THE PATH OF THE SPK FILE TO EXTRACT INFORMATION WITHIN USING "get_objects" FUNCTION
+# MAKE SURE TO USE .bsp AT THE END OF THE SPK_NAME
+def load_spk(kernel_base_folder_name, spk_name):
+
+    # DEFINE BASE PATH OF COMPUTER
+    base_path = os.path.expanduser("~")
+
+    # USE INSTRUCTIONS LOCATED IN THE SPICE FOLDER IN THE SPK_NOTES.TXT FILE
+    # LOADING THE PATH OF THE SPK_NAME USING PREDETERMINED PATHS
+    kernel_path = f"{base_path}/ASTRO/KERNELS/{kernel_base_folder_name}/{spk_name}"
+
+    return kernel_path
+
+

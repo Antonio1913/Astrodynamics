@@ -26,3 +26,5 @@ class DoubleRangeValue:
 
 def withinrange(value, start, end):
     return start <= value <= end
+
+

@@ -1,10 +1,15 @@
 import spiceypy as sp
 import TOOLS as tls
+import os
 
+# LOADS THE LEAPSECOND KERNEL (LSK), BODY SIZE AND ORIENTATION KERNEL (PCK), AND THE EPHEMERIS KERNEL (SPK)
 tls.load_kernels(r'planet_moon_kernels.tm')
 
+#kerel file name
+file_name = tls.load_spk("JUPITER", "jup365.bsp")
+
 # EXTRACTING INFORMATION FROM SPK FILE
-ids, names, tcs_sec, tcs_cal = tls.get_objects(r'C:\Users\antoniogarcia778e\ASTRO\KERNELS\JUPITER\jup365.bsp', display=True)
+ids, names, tcs_sec, tcs_cal = tls.get_objects(file_name, display=True)
 
 # DATES FOR ANALYSIS
 dates = ['2025 JUN 1 00:12:00', '2025 JUN 20 00:00:00']

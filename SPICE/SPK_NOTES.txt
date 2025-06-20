@@ -1,0 +1,38 @@
+#######################################################################################################################
+#######################################################################################################################
+
+THIS DOCUMENT OUTLINES THE INSTRUCTIONS ON STORING SPK FILES ON YOUR COMPUTER IN ORDER TO BE LOADED CORRECTLY
+
+#######################################################################################################################
+#######################################################################################################################
+
+
+
+    1) GO INSIDE YOUR LOCAL DISK (C:) THEN USERS THEN SELECT YOUR MICROSOFT ACCOUNT NAME
+                THE PATH SHOULD BE:
+                        C:\Users/MICROSOFT_ACCOUNT_NAME
+
+    2) INSIDE OF THIS PATH CREATE A PATH CALLED "ASTRO"
+                NEW PATH NAME:
+                        C:\Users/MICROSOFT_ACCOUNT_NAME/ASTRO
+
+    3) INSIDE ASTRO CREATE A NEW FOLDER CALLED "KERNELS"
+                NEW PATH NAME:
+                        C:\Users/MICROSOFT_ACCOUNT_NAME/ASTRO/KERNELS
+
+    4) INSIDE KERNELS IS WHERE THE SPK FILES WILL BE STORED FROM HERE THEY WILL BE FURTHER DIVIDED THESE PATHS WILL BE
+       A LIVING DOCUMENT AS I EXPERIMENT WITH PROJECTS I WILL DOCUMENT HOW THIS DATA IS STORED SO THAT THE FUNCTION
+       "load_spk" WORKS CORRECTLY.
+
+        ** IMPORTANT ** DO NOT CHANGE THE NAME OF THE KERNEL ALL PATHS HAVE BEEN PREDETERMINED.
+
+            1)  PLANETARY SATELLITES AROUND JUPTER
+                - AFTER STEP 3 CREATE A FOLDER CALLED JUPITER IF IT HAS NOT BEEN MADE ALREADY. THE SPK FILES CAN BE
+                  SAVED WITHIN THIS FOLDER.
+                        NEW PATH NAME:
+                            C:\Users/MICROSOFT_ACCOUNT_NAME/ASTRO/KERNELS/JUPITER/KERNEL_NAME.bsp
+            2)  FOR SOLAR SYSTEM OR STORED UNDER PLANETS ON NAIF WEBSITE
+                - AFTER STEP 3 CREATE A FOLDER CALLED SOLAR_SYSTEM IF IT HAS NOT BEEN MADE ALREADY. THE SPK FILES CAN BE
+                  SAVED WITHIN THIS FOLDER.
+                        NEW PATH NAME:
+                            C:\Users/MICROSOFT_ACCOUNT_NAME/ASTRO/KERNELS/SOLAR_SYSTEM/KERNEL_NAME.bsp
